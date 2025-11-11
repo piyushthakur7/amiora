@@ -1,0 +1,158 @@
+Perfect — feminine luxury it is.
+You’ve got everything lined up for a **cinematic, high-end, conversion-focused jewelry site** with an Ethera-level design language but branded as *Amiora Diamonds*.
+
+Here’s your **final, production-ready master prompt**, written specifically for use with AI website builders, UI designers, or full-stack generation tools (Figma → WordPress + WooCommerce).
+It incorporates every element you’ve shared — visuals, tone, layout, and tech stack.
+
+---
+
+## ✅ FINAL PROMPT — **Amiora Diamonds (Luxury Jewelry Brand Website)**
+
+### 🪞 Overview
+
+Design and build a **luxury jewelry e-commerce website** for **Amiora Diamonds**, a premium brand specializing in fine jewelry — gold, diamond, silver, gemstone, bridal, and personalized pieces.
+
+The website should radiate **feminine elegance, modern luxury, and emotional warmth** — combining cinematic visuals, graceful typography, and seamless e-commerce functionality.
+
+---
+
+### 🎨 **Design Language**
+
+* **Visual Tone:** Soft, refined, elegant, and intimate — inspired by Ethera’s aesthetic.
+* **Base Colors:** Ivory white, soft beige, and champagne tones.
+* **Accent Colors:** Rose gold and deep emerald green (used for CTAs, icons, footer background).
+* **Typography:**
+
+  * Headings: *Playfair Display* or *Cormorant Garamond* (serif, classic elegance).
+  * Body: *Lato*, *Nunito Sans*, or *Poppins* (clean and readable).
+* **Overall Feel:** Premium, feminine, trustworthy — high whitespace, minimal clutter, gentle transitions.
+
+---
+
+### 🖥️ **Core Pages / Sections**
+
+#### **1. Home Page**
+
+* **Hero Section (Video Background):**
+  A cinematic, slow-motion jewelry clip (close-up of diamond sparkle, woman’s glance, or hand movement).
+  Soft overlay text:
+
+  * “Where Craft Meets Forever”
+  * CTA Button: *Explore Collection*
+* **Shop by Category Grid** (Rings, Earrings, Neckwear, Wristwear, Men’s, Custom, Bridal).
+* **New Arrivals Carousel**
+* **Best Sellers Section**
+* **Testimonials / Customer Stories**
+* **Instagram Feed Preview**
+* **Trust Badges:** Free Shipping, Easy Exchange, 100% Certified, Lifetime Service.
+
+---
+
+#### **2. Shop / All Products Page**
+
+* Smart filters (Price, Metal, Stone, Style, Occasion).
+* Sorting options (Popularity, Price, Newness).
+* Grid view with elegant hover animation (image zoom + quick add-to-cart).
+
+---
+
+#### **3. Product Detail Page**
+
+* Large zoomable gallery (lightbox on click).
+* Price, availability, delivery info, certification details.
+* Add to Cart / Wishlist / Share icons.
+* Suggested products carousel (related or complementary pieces).
+* Tabs: Product Details | Size Guide | Reviews | Delivery & Return Policy.
+
+---
+
+#### **4. Collections Page**
+
+* Categories: Wedding, Festive, Daily Wear, Gifting, Trending, Personalized.
+* Visual layout: clean grid or staggered mosaic style.
+
+---
+
+#### **5. Informational Pages**
+
+* About Amiora (craftsmanship, ethics, brand story).
+* Contact, FAQs, Policies (Privacy, Shipping, Returns).
+* Blog (optional) — jewelry styling tips, gift guides, etc.
+
+---
+
+### 🧭 **Navigation Structure**
+
+Two-tier header layout:
+
+**Top Bar:**
+
+* Logo (Amiora Diamonds)
+* Search bar (“Search for Diamond Jewellery & More…”)
+* Icons: Wishlist ♥ | User 👤 | Cart 🛒
+
+**Primary Menu Row:**
+`Diamond | Categories | Collections | Daily Wear | Wedding | Gifting | Offer | More`
+
+**Mega Menu Dropdowns:**
+
+* **Categories →** Rings, Earrings, Neckwear, Wristwear, Men’s, All Jewellery
+* **Customize →** Personalized Jewelry, Engraving, Design Your Own
+* **More →** About Us, FAQ, Blog
+
+Sticky header with smooth scroll transition and subtle shadow.
+
+---
+
+### 🛍️ **E-Commerce Functionality**
+
+* **Platform:** WordPress + WooCommerce
+* Fully functional cart, checkout, and payment integration.
+* Wishlist, user account, order tracking.
+* Discount code support (e.g. “25% OFF + ₹5000 EXTRA”).
+* Currency: INR (₹).
+* Product quick-view modal.
+* Auto-suggest search bar.
+* Secure payments (Visa, MasterCard, PayPal, etc.).
+
+---
+
+### 📱 **Responsive Design**
+
+* Fully optimized for desktop, tablet, and mobile.
+* Video hero adapts gracefully on mobile (poster image fallback).
+* Fluid grids and collapsible menus.
+
+---
+
+### 🪄 **Footer Design**
+
+Dark emerald green background with champagne gold headings.
+Sections:
+
+* **About Our Store:** short brand intro.
+* **Quick Links:** Delivery Info, Track Order, Returns, Find a Store.
+* **Information:** Blog, Help & FAQs, Privacy, Terms.
+* **Contact Us:** phone, WhatsApp, icons.
+* **Stay Connected:** email subscription + social icons (Instagram, Facebook, LinkedIn, YouTube).
+* Payment method icons at bottom.
+
+---
+
+### 💎 **Brand Personality**
+
+* Elegant and trustworthy
+* Feminine luxury with warmth and sincerity
+* High-end, emotional storytelling through visuals and tone
+
+---
+
+### 🚀 **Usage Options**
+
+* For developer build → say: **“Give me the WordPress + WooCommerce version”**
+* For design layout → say: **“Give me the Figma UI breakdown”**
+* For colors, typography, logo usage → say: **“Give me the Amiora brand style guide”**
+
+---
+
+Would you like me to add a **one-line brand philosophy** (like a tagline or manifesto) to complete the identity section before you feed it into the builder? Something like *“Crafted for timeless grace.”* or *“Every sparkle tells your story.”*
