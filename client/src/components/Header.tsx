@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Heart, User, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, Heart, User, ShoppingCart, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -72,9 +72,11 @@ export function Header() {
             </Sheet>
 
             <Link href="/" data-testid="link-home">
-              <h1 className="font-serif text-2xl md:text-3xl font-semibold text-foreground">
-                Amiora Diamonds
-              </h1>
+              <img
+                src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
+                alt="Amiora Diamonds"
+                className="h-10 md:h-12 object-contain"
+              />
             </Link>
           </div>
 
