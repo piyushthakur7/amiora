@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
+
 import ringImage from "@assets/generated_images/Diamond_ring_hero_image_34710d71.png";
 import necklaceImage from "@assets/generated_images/Gold_necklace_product_12d0663a.png";
 import earringsImage from "@assets/generated_images/Diamond_earrings_product_c3def0c1.png";
@@ -8,12 +9,86 @@ import bridalImage from "@assets/generated_images/Bridal_jewelry_collection_6783
 import mensImage from "@assets/generated_images/Men's_wedding_band_96c51b11.png";
 
 const categories = [
-  { name: "Rings", slug: "rings", image: ringImage },
-  { name: "Neckwear", slug: "neckwear", image: necklaceImage },
-  { name: "Earrings", slug: "earrings", image: earringsImage },
-  { name: "Wristwear", slug: "wristwear", image: braceletImage },
-  { name: "Bridal", slug: "bridal", image: bridalImage },
-  { name: "Men's Jewelry", slug: "mens-jewelry", image: mensImage },
+  {
+    name: "Rings",
+    slug: "rings",
+    image: ringImage,
+    subcategories: ["Daily wear", "Solitaires", "Bands", "Cocktail", "Platinum"]
+  },
+  {
+    name: "Earrings",
+    slug: "earrings",
+    image: earringsImage,
+    subcategories: ["Studs", "Hoops", "Drop / Jhumka"]
+  },
+  {
+    name: "Pendant / Locket",
+    slug: "pendant-locket",
+    image: necklaceImage,
+    subcategories: ["Daily wear", "Solitaire", "Cluster", "Alphabet"]
+  },
+  {
+    name: "Bangles / Bracelets",
+    slug: "bangles-bracelets",
+    image: braceletImage,
+    subcategories: [
+      {
+        group: "Bracelets",
+        items: [
+          "Chain bracelet",
+          "Adjustable bracelet",
+          "Flexible bracelet",
+          "Tennis bracelet"
+        ]
+      },
+      {
+        group: "Bangles",
+        items: ["Daily-wear bangles", "Bridal bangles", "Noya"]
+      }
+    ]
+  },
+  {
+    name: "Mangal-Sutra",
+    slug: "mangal-sutra",
+    image: bridalImage,
+    subcategories: [
+      "Mangal sutra pendant chain",
+      "Mangal sutra bracelet",
+      "Solitaire mangalsutra"
+    ]
+  },
+  {
+    name: "Necklaces",
+    slug: "necklaces",
+    image: necklaceImage,
+    subcategories: [
+      "Daily wear",
+      "Solitaire",
+      "Bridal",
+      "Choker",
+      "Y",
+      "Bar",
+      "Adjustable"
+    ]
+  },
+  {
+    name: "Nosepin",
+    slug: "nosepin",
+    image: earringsImage,
+    subcategories: ["Solitaire", "Designer", "Rings", "Nath"]
+  },
+  {
+    name: "Men's Collection",
+    slug: "mens-collection",
+    image: mensImage,
+    subcategories: ["Rings", "Studs", "Bracelet", "Kada", "Chains", "Pendant"]
+  },
+  {
+    name: "Kids Collection",
+    slug: "kids-collection",
+    image: ringImage,
+    subcategories: ["Rings", "Bracelet / Bangles", "Pendants", "Earrings"]
+  }
 ];
 
 export function CategoryGrid() {
@@ -23,11 +98,14 @@ export function CategoryGrid() {
         <h2 className="font-serif text-3xl md:text-4xl font-bold text-center mb-12">
           Shop by Category
         </h2>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {categories.map((category) => (
+          {categories.map(category => (
             <Link key={category.slug} href={`/category/${category.slug}`}>
-              <Card className="group overflow-hidden border-card-border hover-elevate transition-all duration-300" data-testid={`card-category-${category.slug}`}>
+              <Card
+                className="group overflow-hidden border-card-border hover-elevate transition-all duration-300"
+                data-testid={`card-category-${category.slug}`}
+              >
                 <CardContent className="p-0">
                   <div className="relative aspect-square overflow-hidden">
                     <img
