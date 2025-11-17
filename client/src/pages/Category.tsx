@@ -1,7 +1,7 @@
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { fetchProducts } from "@/lib/woocommerce";
+import { getProducts } from "@/lib/woocommerce";
 import { ProductCard } from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -50,7 +50,7 @@ export default function Category() {
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['/api/products', 'category', categorySlug],
-    queryFn: () => fetchProducts({ perPage: 20 })
+    queryFn: () => getProducts()
   });
 
   useEffect(() => {

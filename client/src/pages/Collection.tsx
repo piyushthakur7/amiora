@@ -1,7 +1,7 @@
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { fetchProducts } from "@/lib/woocommerce";
+import { getProducts } from "@/lib/woocommerce";
 import { ProductCard } from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import bridalImage from "@assets/generated_images/Bridal_jewelry_collection_67832531.png";
@@ -60,7 +60,7 @@ export default function Collection() {
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['/api/products', collectionSlug],
-    queryFn: () => fetchProducts({ perPage: 20 })
+    queryFn: () => getProducts()
   });
 
   useEffect(() => {

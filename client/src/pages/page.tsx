@@ -7,7 +7,7 @@ export default function Shop() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getProducts()
+    getProducts()   // <-- FIXED
       .then((data: any) => {
         setItems(data);
         setLoading(false);

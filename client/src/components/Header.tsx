@@ -25,10 +25,14 @@ export function Header() {
   const categories = [
     { name: "Rings", slug: "rings" },
     { name: "Earrings", slug: "earrings" },
-    { name: "Neckwear", slug: "neckwear" },
-    { name: "Wristwear", slug: "wristwear" },
-    { name: "Men's Jewelry", slug: "mens-jewelry" },
-    { name: "All Jewellery", slug: "all" }
+    { name: "Pendants & Lockets", slug: "pendants-lockets" },
+    { name: "Bracelets", slug: "bracelets" },
+    { name: "Bangles", slug: "bangles" },
+    { name: "Mangalsutra", slug: "mangalsutra" },
+    { name: "Necklaces", slug: "necklaces" },
+    { name: "Nosepins", slug: "nosepins" },
+    { name: "Men's Collection", slug: "mens-collection" },
+    { name: "Kids Collection", slug: "kids-collection" }
   ];
 
   const collections = [
@@ -58,13 +62,19 @@ export function Header() {
                   </Link>
                   <nav className="flex flex-col gap-4">
                     <Link href="/shop" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start" data-testid="link-shop">Shop All</Button>
+                      <Button variant="ghost" className="w-full justify-start" data-testid="link-shop">
+                        Shop All
+                      </Button>
                     </Link>
                     <Link href="/collections/bridal" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start" data-testid="link-bridal">Bridal</Button>
+                      <Button variant="ghost" className="w-full justify-start" data-testid="link-bridal">
+                        Bridal
+                      </Button>
                     </Link>
                     <Link href="/about" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start" data-testid="link-about">About Us</Button>
+                      <Button variant="ghost" className="w-full justify-start" data-testid="link-about">
+                        About Us
+                      </Button>
                     </Link>
                   </nav>
                 </div>
@@ -122,7 +132,7 @@ export function Header() {
             </Button>
           </div>
         </div>
-        
+
         <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
 
         <nav className="hidden lg:flex items-center justify-center gap-1 border-t border-border px-4 md:px-6 lg:px-8">
@@ -230,6 +240,7 @@ export function Header() {
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
+
             </NavigationMenuList>
           </NavigationMenu>
         </nav>
