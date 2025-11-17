@@ -1,6 +1,6 @@
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts, fetchProduct } from "@/lib/woocommerce";
+import { getProducts, getProduct } from "@/lib/woocommerce";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,14 +21,14 @@ export default function ProductDetail() {
 
   const { data: products } = useQuery({
     queryKey: ['/api/products'],
-    queryFn: () => fetchProducts({ perPage: 100 })
+    queryFn: () => getProducts()
   });
 
   const product = products?.find(p => p.slug === productSlug);
 
   const { data: relatedProducts } = useQuery({
     queryKey: ['/api/products', 'related'],
-    queryFn: () => fetchProducts({ perPage: 4 }),
+    queryFn: () => getProducts(),
     enabled: !!product
   });
 
