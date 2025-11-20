@@ -15,10 +15,10 @@ export function Preloader() {
       }`}
       style={{ zIndex: 9999 }}
     >
-      <img 
-        src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true" 
-        alt="Brand Logo" 
-        className="w-40 h-auto animate-pulse"
+      <img
+        src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
+        alt="Brand Logo"
+        className="w-28 sm:w-32 md:w-40 lg:w-48 xl:w-56 h-auto animate-pulse"
       />
     </div>
   );
