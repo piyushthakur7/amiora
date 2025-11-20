@@ -3,19 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
-import type { Product } from "@shared/schema";
 import { useCart } from "@/lib/cart-store";
 import { useToast } from "@/hooks/use-toast";
 
-interface ProductCardProps {
-  product: Product;
-}
-
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product }: { product: any }) {
   const { addItem } = useCart();
   const { toast } = useToast();
-  const imageSrc = product.images[0]?.src || '';
-  const isOnSale = product.onSale || false;
+
+  // Map WooCommerce fields properly
+  const imageSrc = product.images?.[0]?.src;
+  const name = product.name;
+  const price = product.price || product.regular_price;
+  const regularPrice = product.regular_price;
+  const shortDescription = product.short_description?.replace(/<\/?[^>]+(>|$)/g, "");
+  const isOnSale = product.on_sale;
+  const slug = product.slug || product.id;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -23,77 +25,54 @@ export function ProductCard({ product }: ProductCardProps) {
     addItem(product);
     toast({
       title: "Added to cart",
-      description: `${product.name} has been added to your cart.`
+      description: `${name} has been added to your cart.`
     });
   };
 
   return (
-    <Card className="group overflow-hidden border-card-border hover-elevate transition-all duration-300" data-testid={`card-product-${product.id}`}>
+    <Card className="group overflow-hidden border hover:shadow-md transition">
       <CardContent className="p-0">
-        <div className="relative aspect-square overflow-hidden bg-accent/20">
-          <Link href={`/product/${product.slug}`}>
+        <Link href={`/product/${slug}`}>
+          <div className="relative aspect-square overflow-hidden">
             <img
               src={imageSrc}
-              alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              data-testid={`img-product-${product.id}`}
+              alt={name}
+              className="w-full h-full object-cover group-hover:scale-105 transition"
             />
-          </Link>
-          
-          {isOnSale && (
-            <Badge
-              variant="destructive"
-              className="absolute top-3 left-3"
-              data-testid={`badge-sale-${product.id}`}
-            >
-              Sale
-            </Badge>
-          )}
-
-          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <Button
-              size="icon"
-              variant="secondary"
-              className="h-9 w-9 rounded-full shadow-md"
-              data-testid={`button-wishlist-${product.id}`}
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant="default"
-              className="h-9 w-9 rounded-full shadow-md"
-              onClick={handleAddToCart}
-              data-testid={`button-add-to-cart-${product.id}`}
-            >
-              <ShoppingCart className="h-4 w-4" />
-            </Button>
           </div>
-        </div>
+        </Link>
+
+        {isOnSale && (
+          <Badge className="absolute top-3 left-3">Sale</Badge>
+        )}
 
         <div className="p-4">
-          <Link href={`/product/${product.slug}`}>
-            <h3 className="font-medium text-base mb-2 line-clamp-2 hover:text-primary transition-colors" data-testid={`text-product-name-${product.id}`}>
-              {product.name}
+          <Link href={`/product/${slug}`}>
+            <h3 className="font-medium text-base mb-2 line-clamp-2 hover:text-primary transition-colors">
+              {name}
             </h3>
           </Link>
-          
+
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-semibold text-primary" data-testid={`text-price-${product.id}`}>
-              {product.price}
+            <span className="text-lg font-semibold text-primary">
+              ₹{price}
             </span>
-            {isOnSale && product.regularPrice && (
-              <span className="text-sm text-muted-foreground line-through" data-testid={`text-regular-price-${product.id}`}>
-                {product.regularPrice}
+            {isOnSale && regularPrice && (
+              <span className="text-sm text-muted-foreground line-through">
+                ₹{regularPrice}
               </span>
             )}
           </div>
 
-          {product.shortDescription && (
+          {shortDescription && (
             <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-              {product.shortDescription}
+              {shortDescription}
             </p>
           )}
+
+          <Button size="sm" className="mt-4 w-full" onClick={handleAddToCart}>
+            <ShoppingCart className="mr-2 h-4 w-4" /> Add to cart
+          </Button>
         </div>
       </CardContent>
     </Card>
