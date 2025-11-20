@@ -1,0 +1,23 @@
+.navigation-menu {
+  position: relative;
+  z-index: 50;
+}
+
+.navigation-menu__viewport {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  width: max-content;
+}
+
+.navigation-menu__content {
+  position: absolute;
+  top: calc(100%);
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 1rem;
+  min-width: 240px;
+}

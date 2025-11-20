@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+
 import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuTrigger,
+  NavigationMenuViewport
 } from "@/components/ui/navigation-menu";
+
 import { CartDrawer } from "@/components/CartDrawer";
 import { useCart } from "@/lib/cart-store";
 
@@ -23,16 +26,65 @@ export function Header() {
   const cartCount = getTotalItems();
 
   const categories = [
-    { name: "Rings", slug: "rings" },
-    { name: "Earrings", slug: "earrings" },
-    { name: "Pendants & Lockets", slug: "pendants-lockets" },
-    { name: "Bracelets", slug: "bracelets" },
-    { name: "Bangles", slug: "bangles" },
-    { name: "Mangalsutra", slug: "mangalsutra" },
-    { name: "Necklaces", slug: "necklaces" },
-    { name: "Nosepins", slug: "nosepins" },
-    { name: "Men's Collection", slug: "mens-collection" },
-    { name: "Kids Collection", slug: "kids-collection" }
+    {
+      name: "Necklaces",
+      slug: "necklaces",
+      children: ["Daily wear", "Solitaire", "Layer", "Bridal", "Choker", "Y", "Bar", "Adjustable"],
+    },
+    {
+      name: "Nosepins",
+      slug: "nosepins",
+      children: ["Solitaire", "Designer", "Rings", "Nath"],
+    },
+    {
+      name: "Rings",
+      slug: "rings",
+      children: ["Daily wear", "Solitaires", "Bands", "Cocktail", "Platinum"],
+    },
+    {
+      name: "Earrings",
+      slug: "earrings",
+      children: ["Studs", "Hoops", "Drop / Jhumka"],
+    },
+    {
+      name: "Pendants & Lockets",
+      slug: "pendants-lockets",
+      children: ["Daily wear", "Solitaire", "Cluster", "Alphabet"],
+    },
+    {
+      name: "Bracelets",
+      slug: "bracelets",
+      children: [
+        "Chain bracelet",
+        "Adjustable bracelet",
+        "Flexible bracelet",
+        "Tennis bracelet",
+      ],
+    },
+    {
+      name: "Bangles",
+      slug: "bangles",
+      children: ["Daily-wear bangles", "Bridal bangles", "Noya"],
+    },
+    {
+      name: "Mangalsutra",
+      slug: "mangalsutra",
+      children: [
+        "Mangal sutra pendant chain",
+        "Mangal sutra bracelet",
+        "Solitaire mangalsutra",
+      ],
+    },
+    {
+      name: "Men's Collection",
+      slug: "mens-collection",
+      children: ["Rings", "Studs", "Bracelet", "Kada", "Chains", "Pendant"],
+    },
+    {
+      name: "Kids Collection",
+      slug: "kids-collection",
+      children: ["Rings", "Bracelet / Bangles", "Pendants", "Earrings"],
+    },
   ];
 
   const collections = [
@@ -41,17 +93,19 @@ export function Header() {
     { name: "Daily Wear", slug: "daily-wear" },
     { name: "Gifting", slug: "gifting" },
     { name: "Trending", slug: "trending" },
-    { name: "Personalized", slug: "personalized" }
+    { name: "Personalized", slug: "personalized" },
   ];
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border">
       <div className="container mx-auto">
         <div className="flex items-center justify-between h-20 px-4 md:px-6 lg:px-8">
+
+          {/* MOBILE MENU */}
           <div className="flex items-center gap-6">
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon" data-testid="button-menu-toggle">
+                <Button variant="ghost" size="icon">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
@@ -60,28 +114,12 @@ export function Header() {
                   <Link href="/" onClick={() => setIsMenuOpen(false)}>
                     <span className="font-serif text-2xl">Amiora Diamonds</span>
                   </Link>
-                  <nav className="flex flex-col gap-4">
-                    <Link href="/shop" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start" data-testid="link-shop">
-                        Shop All
-                      </Button>
-                    </Link>
-                    <Link href="/collections/bridal" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start" data-testid="link-bridal">
-                        Bridal
-                      </Button>
-                    </Link>
-                    <Link href="/about" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start" data-testid="link-about">
-                        About Us
-                      </Button>
-                    </Link>
-                  </nav>
                 </div>
               </SheetContent>
             </Sheet>
 
-            <Link href="/" data-testid="link-home">
+            {/* LOGO */}
+            <Link href="/">
               <img
                 src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
                 alt="Amiora Diamonds"
@@ -90,6 +128,7 @@ export function Header() {
             </Link>
           </div>
 
+          {/* SEARCH BAR */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -97,19 +136,19 @@ export function Header() {
                 type="search"
                 placeholder="Search for Diamond Jewellery & More..."
                 className="pl-10 bg-accent/30 border-border"
-                data-testid="input-search"
               />
             </div>
           </div>
 
+          {/* ICONS */}
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" data-testid="button-search-mobile" className="md:hidden">
-              <Search className="h-5 w-5" />
+            <Button variant="ghost" size="icon">
+              <Search className="h-5 w-5 md:hidden" />
             </Button>
-            <Button variant="ghost" size="icon" data-testid="button-wishlist">
+            <Button variant="ghost" size="icon">
               <Heart className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" data-testid="button-account">
+            <Button variant="ghost" size="icon">
               <User className="h-5 w-5" />
             </Button>
             <Button
@@ -117,15 +156,10 @@ export function Header() {
               size="icon"
               className="relative"
               onClick={() => setIsCartOpen(true)}
-              data-testid="button-cart"
             >
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
-                <Badge
-                  variant="default"
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                  data-testid="badge-cart-count"
-                >
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
                   {cartCount}
                 </Badge>
               )}
@@ -135,55 +169,49 @@ export function Header() {
 
         <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
 
-        <nav className="hidden lg:flex items-center justify-center gap-1 border-t border-border px-4 md:px-6 lg:px-8">
-          <NavigationMenu>
+        {/* DESKTOP NAV */}
+        <nav className="hidden lg:flex items-center border-t border-border px-4 md:px-6 lg:px-8">
+          
+          {/* THIS FIXES THE POSITIONING */}
+          <NavigationMenu className="relative">
+
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/collections/diamond" data-testid="link-diamond">
-                  <Button variant="ghost" className="h-12 font-normal">Diamond</Button>
-                </Link>
-              </NavigationMenuItem>
+              {categories.map((category) => (
+                <NavigationMenuItem key={category.slug}>
+                  <NavigationMenuTrigger className="h-12 font-normal">
+                    {category.name}
+                  </NavigationMenuTrigger>
 
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="h-12 font-normal" data-testid="menu-categories">
-                  Categories
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid gap-3 p-6 w-[500px] grid-cols-2">
-                    {categories.map((category) => (
-                      <Link
-                        key={category.slug}
-                        href={`/category/${category.slug}`}
-                        data-testid={`link-category-${category.slug}`}
-                      >
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start hover-elevate"
-                        >
-                          {category.name}
-                        </Button>
+                  <NavigationMenuContent className="bg-white shadow-lg rounded-md">
+                    <div className="flex flex-col gap-2 p-4 w-[260px]">
+                      <Link href={`/category/${category.slug}`}>
+                        <span className="font-medium hover:underline cursor-pointer">
+                          View all {category.name}
+                        </span>
                       </Link>
-                    ))}
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
 
+                      <div className="mt-2 flex flex-col gap-1 pl-1 text-sm text-muted-foreground">
+                        {category.children.map((sub) => (
+                          <span key={sub} className="cursor-pointer hover:text-foreground">
+                            {sub}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              ))}
+
+              {/* COLLECTIONS */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="h-12 font-normal" data-testid="menu-collections">
+                <NavigationMenuTrigger className="h-12 font-normal">
                   Collections
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
+                <NavigationMenuContent className="bg-white shadow-lg rounded-md">
                   <div className="grid gap-3 p-6 w-[500px] grid-cols-2">
                     {collections.map((collection) => (
-                      <Link
-                        key={collection.slug}
-                        href={`/collections/${collection.slug}`}
-                        data-testid={`link-collection-${collection.slug}`}
-                      >
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start hover-elevate"
-                        >
+                      <Link key={collection.slug} href={`/collections/${collection.slug}`}>
+                        <Button variant="ghost" className="w-full justify-start">
                           {collection.name}
                         </Button>
                       </Link>
@@ -191,57 +219,11 @@ export function Header() {
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <Link href="/collections/daily-wear" data-testid="link-daily-wear">
-                  <Button variant="ghost" className="h-12 font-normal">Daily Wear</Button>
-                </Link>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <Link href="/collections/wedding" data-testid="link-wedding">
-                  <Button variant="ghost" className="h-12 font-normal">Wedding</Button>
-                </Link>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <Link href="/collections/gifting" data-testid="link-gifting">
-                  <Button variant="ghost" className="h-12 font-normal">Gifting</Button>
-                </Link>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <Link href="/offers" data-testid="link-offers">
-                  <Button variant="ghost" className="h-12 font-normal text-primary">Offer</Button>
-                </Link>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="h-12 font-normal" data-testid="menu-more">
-                  More
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid gap-3 p-6 w-[300px]">
-                    <Link href="/about" data-testid="link-about-nav">
-                      <Button variant="ghost" className="w-full justify-start hover-elevate">
-                        About Us
-                      </Button>
-                    </Link>
-                    <Link href="/faq" data-testid="link-faq">
-                      <Button variant="ghost" className="w-full justify-start hover-elevate">
-                        FAQ
-                      </Button>
-                    </Link>
-                    <Link href="/blog" data-testid="link-blog">
-                      <Button variant="ghost" className="w-full justify-start hover-elevate">
-                        Blog
-                      </Button>
-                    </Link>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
             </NavigationMenuList>
+
+            {/* REQUIRED */}
+            <NavigationMenuViewport className="mt-2" />
+
           </NavigationMenu>
         </nav>
       </div>

@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "@/components/ui/navigation-menu.css";
+
 
 /* LIGHT MODE - Amiora Diamonds Luxury Theme */
 :root {
