@@ -6,14 +6,13 @@ export function Hero() {
     <section className="relative h-[85vh] md:h-[90vh] w-full overflow-hidden">
 
       {/* Background video */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover"
-        src="https://www.pexels.com/download/video/5106444/"
-        autoPlay
-        loop
-        muted
-        playsInline
-      />
+      <img
+  className="absolute inset-0 w-full h-full object-cover"
+  src="https://images.pexels.com/photos/3266703/pexels-photo-3266703.jpeg"
+  alt="Background"
+  loading="lazy"
+/>
+
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/40 to-background/80" />
