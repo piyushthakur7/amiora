@@ -13,7 +13,14 @@ interface CartDrawerProps {
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const { items: cartItems, removeItem, updateQuantity } = useCart();
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // Normalize WooCommerce price values safely
+  const getSafePrice = (value: any) => Number(value ?? 0);
+
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + getSafePrice(item.price) * item.quantity,
+    0
+  );
+
   const shipping = subtotal > 50000 ? 0 : 500;
   const total = subtotal + shipping;
 
@@ -44,58 +51,62 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           ) : (
             <>
               <div className="flex-1 overflow-auto space-y-4 pr-2">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-4" data-testid={`cart-item-${item.id}`}>
-                    <div className="w-20 h-20 rounded-md overflow-hidden bg-accent/20 flex-shrink-0">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                {cartItems.map((item) => {
+                  const price = getSafePrice(item.price);
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between gap-2 mb-2">
-                        <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 flex-shrink-0"
-                          onClick={() => removeItem(item.id)}
-                          data-testid={`button-remove-${item.id}`}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                  return (
+                    <div key={item.id} className="flex gap-4" data-testid={`cart-item-${item.id}`}>
+                      <div className="w-20 h-20 rounded-md overflow-hidden bg-accent/20 flex-shrink-0">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
 
-                      <p className="text-sm font-semibold text-primary mb-2">
-                        ₹{item.price.toLocaleString('en-IN')}
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between gap-2 mb-2">
+                          <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 flex-shrink-0"
+                            onClick={() => removeItem(item.id)}
+                            data-testid={`button-remove-${item.id}`}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
 
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          data-testid={`button-decrease-${item.id}`}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="text-sm w-8 text-center">{item.quantity}</span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          data-testid={`button-increase-${item.id}`}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
+                        <p className="text-sm font-semibold text-primary mb-2">
+                          ₹{price.toLocaleString("en-IN")}
+                        </p>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            data-testid={`button-decrease-${item.id}`}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="text-sm w-8 text-center">{item.quantity}</span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            data-testid={`button-increase-${item.id}`}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="mt-6 space-y-4">
@@ -104,17 +115,17 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium">₹{subtotal.toLocaleString('en-IN')}</span>
+                    <span className="font-medium">₹{subtotal.toLocaleString("en-IN")}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
                     <span className="font-medium">
-                      {shipping === 0 ? 'Free' : `₹${shipping.toLocaleString('en-IN')}`}
+                      {shipping === 0 ? "Free" : `₹${shipping.toLocaleString("en-IN")}`}
                     </span>
                   </div>
                   {subtotal < 50000 && (
                     <p className="text-xs text-muted-foreground">
-                      Add ₹{(50000 - subtotal).toLocaleString('en-IN')} more for free shipping
+                      Add ₹{(50000 - subtotal).toLocaleString("en-IN")} more for free shipping
                     </p>
                   )}
                 </div>
@@ -124,7 +135,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Total</span>
                   <span className="text-xl font-bold text-primary">
-                    ₹{total.toLocaleString('en-IN')}
+                    ₹{total.toLocaleString("en-IN")}
                   </span>
                 </div>
 
