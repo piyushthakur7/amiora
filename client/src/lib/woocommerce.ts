@@ -1,3 +1,5 @@
+import { mapCategory } from "./mapCategory";
+
 // Load environment variables
 const base = import.meta.env.VITE_WC_URL;
 const key = import.meta.env.VITE_WC_CONSUMER_KEY;
@@ -8,7 +10,7 @@ console.log("WooCommerce Base URL:", base);
 console.log("Consumer Key:", key);
 console.log("Consumer Secret:", secret);
 
-// Fetch all products (100 per page)
+// Fetch ALL products (mapped to correct category bucket)
 export async function getProducts(page: number = 1) {
   const url =
     `${base}/wp-json/wc/v3/products` +
@@ -27,10 +29,28 @@ export async function getProducts(page: number = 1) {
     throw new Error("Failed to load products");
   }
 
-  return res.json();
+  const products = await res.json();
+
+  // Attach mapped bucket to each product
+  const mapped = products
+    .map((p: any) => {
+      const rawCat = p.categories?.[0]?.name || "";
+      const bucket = mapCategory(rawCat);
+
+      // hide products with categories not in your mapping table
+      if (!bucket) return null;
+
+      return {
+        ...p,
+        bucket
+      };
+    })
+    .filter(Boolean);
+
+  return mapped;
 }
 
-// Fetch single product by ID
+// Fetch single product + mapped bucket
 export async function getProduct(id: number) {
   const url =
     `${base}/wp-json/wc/v3/products/${id}` +
@@ -43,7 +63,15 @@ export async function getProduct(id: number) {
     throw new Error("Failed to load product");
   }
 
-  return res.json();
+  const product = await res.json();
+
+  const rawCat = product.categories?.[0]?.name || "";
+  const bucket = mapCategory(rawCat);
+
+  return {
+    ...product,
+    bucket
+  };
 }
 
 // Fetch WooCommerce categories (optional)
