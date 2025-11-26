@@ -1,17 +1,13 @@
 import { mapCategory } from "./mapCategory";
+import type { Product } from "@/types/Product";
 
 // Load environment variables
 const base = import.meta.env.VITE_WC_URL;
 const key = import.meta.env.VITE_WC_CONSUMER_KEY;
 const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-// Debug logs (optional – remove in production)
-console.log("WooCommerce Base URL:", base);
-console.log("Consumer Key:", key);
-console.log("Consumer Secret:", secret);
-
-// Fetch ALL products (mapped to correct category bucket)
-export async function getProducts(page: number = 1) {
+// Fetch ALL products (mapped to category bucket)
+export async function getProducts(page: number = 1): Promise<Product[]> {
   const url =
     `${base}/wp-json/wc/v3/products` +
     `?consumer_key=${key}` +
@@ -20,38 +16,33 @@ export async function getProducts(page: number = 1) {
     `&page=${page}` +
     `&status=publish`;
 
-  console.log("Fetching:", url);
-
   const res = await fetch(url);
 
   if (!res.ok) {
-    console.error("WooCommerce fetch failed:", await res.text());
     throw new Error("Failed to load products");
   }
 
   const products = await res.json();
 
-  // Attach mapped bucket to each product
-  const mapped = products
+  const mapped: Product[] = products
     .map((p: any) => {
       const rawCat = p.categories?.[0]?.name || "";
       const bucket = mapCategory(rawCat);
 
-      // hide products with categories not in your mapping table
       if (!bucket) return null;
 
       return {
         ...p,
         bucket
-      };
+      } as Product;
     })
     .filter(Boolean);
 
   return mapped;
 }
 
-// Fetch single product + mapped bucket
-export async function getProduct(id: number) {
+// Fetch a single product
+export async function getProduct(id: number): Promise<Product> {
   const url =
     `${base}/wp-json/wc/v3/products/${id}` +
     `?consumer_key=${key}` +
@@ -63,19 +54,21 @@ export async function getProduct(id: number) {
     throw new Error("Failed to load product");
   }
 
-  const product = await res.json();
+  const p = await res.json();
 
-  const rawCat = product.categories?.[0]?.name || "";
+  const rawCat = p.categories?.[0]?.name || "";
   const bucket = mapCategory(rawCat);
 
   return {
-    ...product,
+    ...p,
     bucket
-  };
+  } as Product;
 }
 
-// Fetch WooCommerce categories (optional)
-export async function getCategories() {
+// Fetch categories
+export async function getCategories(): Promise<
+  { id: number; name: string }[]
+> {
   const url =
     `${base}/wp-json/wc/v3/products/categories` +
     `?consumer_key=${key}` +
