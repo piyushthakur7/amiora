@@ -1,126 +1,46 @@
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { getProducts } from "@/lib/woocommerce";
 import { ProductCard } from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { mapCategory } from "@/lib/mapCategory";
-import { CATEGORY_BUCKETS } from "@/lib/categoryBuckets";
-
-// Frontend category metadata
-const categoryData: Record<
-  string,
-  { title: string; description: string; bucket: string }
-> = {
-  rings: {
-    title: "Rings",
-    description: "Discover our stunning collection of diamond and gold rings",
-    bucket: "rings",
-  },
-  earrings: {
-    title: "Earrings",
-    description: "Elegant earrings to complement every occasion",
-    bucket: "earrings",
-  },
-  neckwear: {
-    title: "Neckwear",
-    description: "Exquisite necklaces and pendants crafted with precision",
-    bucket: "necklaces",
-  },
-  wristwear: {
-    title: "Wristwear",
-    description: "Beautiful bracelets and bangles for timeless elegance",
-    bucket: "bracelets",
-  },
-  "mens-jewelry": {
-    title: "Men's Jewelry",
-    description: "Sophisticated jewelry designed for the modern gentleman",
-    bucket: "mens",
-  },
-  bridal: {
-    title: "Bridal",
-    description: "Complete bridal sets for your special day",
-    bucket: "necklaces",
-  },
-  custom: {
-    title: "Custom Jewelry",
-    description: "Create your own unique piece with our customization service",
-    bucket: "custom",
-  },
-  all: {
-    title: "All Jewellery",
-    description: "Browse our complete collection of fine jewelry",
-    bucket: "all",
-  },
-};
 
 export default function Category() {
-  const params = useParams();
-  const categorySlug = params.slug || "";
-
-  const category =
-    categoryData[categorySlug] || {
-      title: "Category",
-      description: "Explore our jewelry collection",
-      bucket: "all",
-    };
+  const { slug } = useParams();
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ["/api/products", "category", categorySlug],
+    queryKey: ["products-by-category", slug],
     queryFn: () => getProducts(),
   });
 
-  const filteredProducts = useMemo(() => {
-    if (!products) return [];
-
-    if (category.bucket === "all") {
-      return products;
-    }
-
-    return products.filter((product: any) => {
-      const wcCategories = product.categories || [];
-
-      for (const wcCat of wcCategories) {
-        const mapped = mapCategory(wcCat.name);
-        if (mapped === category.bucket) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }, [products, category.bucket]);
+  // Filter based on WooCommerce category slug
+  const filteredProducts =
+    products?.filter((p: any) =>
+      p.categories?.some((c: any) => c.slug === slug)
+    ) || [];
 
   useEffect(() => {
-    document.title = `${category.title} | Amiora Diamonds`;
-  }, [category.title]);
+    document.title = `${slug} | Amiora Diamonds`;
+  }, [slug]);
 
   return (
-    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12">
-      <div className="mb-12">
-        <nav className="text-sm text-muted-foreground mb-6">
+    <div className="container mx-auto px-4 py-12">
+      <div className="mb-10">
+        <nav className="text-sm text-muted-foreground mb-4">
           <Link href="/">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/shop">Shop</Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground">{category.title}</span>
+          <span className="text-foreground capitalize">{slug}</span>
         </nav>
 
-        <h1
-          className="font-serif text-4xl md:text-5xl font-bold mb-4"
-          data-testid="text-category-title"
-        >
-          {category.title}
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl">
-          {category.description}
+        <h1 className="text-4xl font-bold capitalize mb-3">{slug}</h1>
+        <p className="text-muted-foreground">
+          Browse our collection of {slug}
         </p>
       </div>
 
-      <div className="mb-6">
-        <p className="text-sm text-muted-foreground">
-          {filteredProducts.length} products
-        </p>
-      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        {filteredProducts.length} products
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {isLoading ? (
@@ -136,9 +56,9 @@ export default function Category() {
             <ProductCard key={product.id} product={product} />
           ))
         ) : (
-          <div className="text-center py-16 col-span-full">
+          <div className="col-span-full text-center py-20">
             <p className="text-muted-foreground text-lg">
-              No products available in this category yet.
+              No products found in this category.
             </p>
           </div>
         )}

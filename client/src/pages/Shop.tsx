@@ -1,57 +1,32 @@
-import { useEffect, useState, useMemo } from "react";
-import { getProducts } from "../lib/woocommerce";
-import { ProductCard } from "@/components/ProductCard";
-import { mapCategory } from "../lib/mapCategory";  
+import { Link } from "wouter";
 
 export default function Shop() {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getProducts()
-      .then((data: any[]) => {
-        setItems(data);
-        setLoading(false);
-      })
-      .catch((err: any) => {
-        console.error("WooCommerce fetch failed:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  // Optional: map WooCommerce categories for future filtering
-  const productsWithBuckets = useMemo(() => {
-    return items.map((product: any) => {
-      const wcCategories = product.categories || [];
-      const mappedBuckets = wcCategories
-        .map((c: any) => mapCategory(c.name))
-        .filter(Boolean); // remove null
-
-      return { ...product, buckets: mappedBuckets };
-    });
-  }, [items]);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="font-serif text-3xl font-bold mb-8">Shop</h1>
-        <p>Loading products…</p>
-      </div>
-    );
-  }
+  const categories = [
+    { name: "Necklaces", slug: "necklaces" },
+    { name: "Nosepins", slug: "nosepins" },
+    { name: "Rings", slug: "rings" },
+    { name: "Earrings", slug: "earrings" },
+    { name: "Pendants & Lockets", slug: "pendants-lockets" },
+    { name: "Bracelets", slug: "bracelets" },
+    { name: "Bangles", slug: "bangles" },
+    { name: "Mangalsutra", slug: "mangalsutra" },
+    { name: "Men's Collection", slug: "mens-collection" },
+    { name: "Kids Collection", slug: "kids-collection" },
+  ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="font-serif text-3xl font-bold mb-8">Shop</h1>
+    <div className="p-10">
+      <h1 className="text-3xl font-bold mb-6">Shop All Categories</h1>
 
-      {/* 
-        You can add category filters here later.
-        productsWithBuckets[x].buckets contains the mapped bucket names.
-      */}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {productsWithBuckets.map((product: any) => (
-          <ProductCard key={product.id} product={product} />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {categories.map((cat) => (
+          <Link
+            key={cat.slug}
+            href={`/${cat.slug}`}
+            className="p-6 border rounded-xl hover:shadow-lg cursor-pointer transition bg-white text-center"
+          >
+            <h3 className="text-xl font-semibold">{cat.name}</h3>
+          </Link>
         ))}
       </div>
     </div>

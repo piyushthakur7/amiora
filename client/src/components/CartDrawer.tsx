@@ -10,11 +10,11 @@ interface CartDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// isolated to avoid recreating on each render
+const getSafePrice = (value: any) => Number(value ?? 0);
+
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const { items: cartItems, removeItem, updateQuantity } = useCart();
-
-  // Normalize WooCommerce price values safely
-  const getSafePrice = (value: any) => Number(value ?? 0);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + getSafePrice(item.price) * item.quantity,
@@ -43,7 +43,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 Discover our exquisite collection of fine jewelry
               </p>
               <Link href="/shop">
-                <Button onClick={() => onOpenChange(false)} data-testid="button-continue-shopping">
+                <Button onClick={() => onOpenChange(false)}>
                   Continue Shopping
                 </Button>
               </Link>
@@ -55,24 +55,29 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   const price = getSafePrice(item.price);
 
                   return (
-                    <div key={item.id} className="flex gap-4" data-testid={`cart-item-${item.id}`}>
+                    <div key={item.id} className="flex gap-4">
                       <div className="w-20 h-20 rounded-md overflow-hidden bg-accent/20 flex-shrink-0">
                         <img
                           src={item.image}
                           alt={item.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "/placeholder-image.jpg";
+                          }}
                         />
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between gap-2 mb-2">
-                          <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
+                          <h4 className="font-medium text-sm line-clamp-2">
+                            {item.name}
+                          </h4>
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6 flex-shrink-0"
                             onClick={() => removeItem(item.id)}
-                            data-testid={`button-remove-${item.id}`}
                           >
                             <X className="h-4 w-4" />
                           </Button>
@@ -87,18 +92,25 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                             variant="outline"
                             size="icon"
                             className="h-7 w-7"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            data-testid={`button-decrease-${item.id}`}
+                            onClick={() =>
+                              updateQuantity(
+                                item.id,
+                                Math.max(1, item.quantity - 1)
+                              )
+                            }
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="text-sm w-8 text-center">{item.quantity}</span>
+                          <span className="text-sm w-8 text-center">
+                            {item.quantity}
+                          </span>
                           <Button
                             variant="outline"
                             size="icon"
                             className="h-7 w-7"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            data-testid={`button-increase-${item.id}`}
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -115,17 +127,22 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium">₹{subtotal.toLocaleString("en-IN")}</span>
+                    <span className="font-medium">
+                      ₹{subtotal.toLocaleString("en-IN")}
+                    </span>
                   </div>
+
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
                     <span className="font-medium">
                       {shipping === 0 ? "Free" : `₹${shipping.toLocaleString("en-IN")}`}
                     </span>
                   </div>
+
                   {subtotal < 50000 && (
                     <p className="text-xs text-muted-foreground">
-                      Add ₹{(50000 - subtotal).toLocaleString("en-IN")} more for free shipping
+                      Add ₹{(50000 - subtotal).toLocaleString("en-IN")} more for
+                      free shipping
                     </p>
                   )}
                 </div>
@@ -141,15 +158,19 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
                 <div className="space-y-2">
                   <Link href="/checkout">
-                    <Button className="w-full" size="lg" onClick={() => onOpenChange(false)} data-testid="button-checkout">
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      onClick={() => onOpenChange(false)}
+                    >
                       Proceed to Checkout
                     </Button>
                   </Link>
+
                   <Button
                     variant="outline"
                     className="w-full"
                     onClick={() => onOpenChange(false)}
-                    data-testid="button-continue-browsing"
                   >
                     Continue Shopping
                   </Button>

@@ -6,7 +6,7 @@ export function Hero() {
     <section className="relative h-[90vh] w-full overflow-hidden">
 
       <video
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover scale-110 animate-slowzoom"
         src="/header.mp4"
         autoPlay
         muted
@@ -15,17 +15,18 @@ export function Hero() {
         preload="auto"
       />
 
-      {/* Light global darkening */}
-      <div className="absolute inset-0 bg-black/25" />
+      {/* Cinematic depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-transparent" />
 
-      {/* Softer bottom fade */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent" />
+      {/* Vignette for premium look */}
+      <div className="absolute inset-0 pointer-events-none bg-black/20 mix-blend-multiply" />
 
-      {/* Content container (empty) */}
-      <div className="relative h-full flex items-center justify-center z-10" />
+      {/* Soft gold bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#C8A46A]/20 to-transparent" />
 
-      {/* Bottom edge fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
+      {/* Light sheen overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 mix-blend-overlay" />
+
     </section>
   );
 }

@@ -5,7 +5,7 @@ import { CategoryGrid } from "@/components/CategoryGrid";
 import { ProductCard } from "@/components/ProductCard";
 import { TrustBadges } from "@/components/TrustBadges";
 import { Testimonials } from "@/components/Testimonials";
-import { InstagramFeed } from "@/components/InstagramFeed";
+import InstagramFeed from "@/components/InstagramFeed";
 import { getProducts } from "@/lib/woocommerce";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
