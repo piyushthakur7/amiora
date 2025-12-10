@@ -1,71 +1,91 @@
+import { Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-const testimonials = [
-  {
-    name: "Priya Sharma",
-    initials: "PS",
-    rating: 5,
-    text: "Absolutely stunning craftsmanship! My engagement ring is beyond beautiful. The team at Amiora made the entire experience special and memorable.",
-    location: "Mumbai"
-  },
-  {
-    name: "Rahul Mehta",
-    initials: "RM",
-    rating: 5,
-    text: "Purchased a diamond necklace for my wife's anniversary. The quality and design exceeded our expectations. Highly recommend Amiora Diamonds!",
-    location: "Delhi"
-  },
-  {
-    name: "Anjali Desai",
-    initials: "AD",
-    rating: 5,
-    text: "The bridal collection is exquisite! Every piece tells a story. The customer service was exceptional, helping me choose the perfect set for my wedding.",
-    location: "Bangalore"
-  }
-];
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export function Testimonials() {
+  const reviews = [
+    {
+      text: "The craftsmanship is absolutely stunning. I bought a diamond pendant for my wife, and she hasn't taken it off since. Truly timeless pieces.",
+      author: "Rajesh K.",
+      location: "Mumbai",
+    },
+    {
+      text: "Amiora's collection is unlike anything else. The attention to detail and the quality of the diamonds are simply world-class. Highly recommended.",
+      author: "Priya S.",
+      location: "Bangalore",
+    },
+    {
+      text: "I was looking for something unique for my engagement, and Amiora delivered perfection. The service was as exquisite as the ring itself.",
+      author: "Aditya M.",
+      location: "Delhi",
+    },
+    {
+      text: "Elegant, sophisticated, and pure luxury. Every time I wear my Amiora bracelet, I get compliments. It's my favorite piece of jewelry.",
+      author: "Sneha R.",
+      location: "Hyderabad",
+    },
+  ];
+
   return (
-    <section className="py-16 md:py-24">
-      <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        <h2 className="font-serif text-3xl md:text-4xl font-bold text-center mb-4">
-          What Our Customers Say
-        </h2>
-        <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          Join thousands of happy customers who trust Amiora Diamonds for their special moments
-        </p>
+    <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <svg width="100%" height="100%">
+          <pattern id="pattern-circles" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" fill="currentColor"></circle>
+          </pattern>
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-circles)"></rect>
+        </svg>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index} className="border-card-border" data-testid={`card-testimonial-${index}`}>
-              <CardContent className="p-6">
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                  ))}
-                </div>
-                
-                <p className="text-sm text-foreground mb-6 leading-relaxed">
-                  "{testimonial.text}"
-                </p>
-
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                      {testimonial.initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-sm">{testimonial.name}</p>
-                    <p className="text-xs text-muted-foreground">{testimonial.location}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="text-center mb-16">
+          <Quote className="h-12 w-12 text-gold mx-auto mb-6 opacity-80" />
+          <h2 className="font-serif text-3xl md:text-5xl text-white mb-4">
+            Words from our Collectors
+          </h2>
+          <div className="h-1 w-20 bg-gold mx-auto" />
         </div>
+
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full max-w-5xl mx-auto"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {reviews.map((review, index) => (
+              <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="p-1">
+                  <Card className="bg-white/5 border-white/10 text-white backdrop-blur-sm">
+                    <CardContent className="flex flex-col p-8 h-full min-h-[250px] justify-between">
+                      <p className="text-lg leading-relaxed italic font-serif text-white/90">
+                        "{review.text}"
+                      </p>
+                      <div className="mt-6 pt-6 border-t border-white/10">
+                        <p className="font-semibold text-gold tracking-wide">
+                          {review.author}
+                        </p>
+                        <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
+                          {review.location}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex -left-12 bg-transparent border-white/20 text-white hover:bg-gold hover:text-primary hover:border-gold" />
+          <CarouselNext className="hidden md:flex -right-12 bg-transparent border-white/20 text-white hover:bg-gold hover:text-primary hover:border-gold" />
+        </Carousel>
       </div>
     </section>
   );

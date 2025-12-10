@@ -1,5 +1,7 @@
 // client/src/lib/woocommerce.ts
 import type { Product } from "@/types/Product";
+import { products as localProducts } from "../data/products";
+import categoriesData from "../data/categories.json";
 
 /* -------------------------------------------------
    CATEGORY TYPE
@@ -20,93 +22,85 @@ export interface WcCategory {
 }
 
 /* -------------------------------------------------
-   ENV VARIABLES
-------------------------------------------------- */
-const base = import.meta.env.VITE_WC_URL || "";
-const key = import.meta.env.VITE_WC_CONSUMER_KEY || "";
-const secret = import.meta.env.VITE_WC_CONSUMER_SECRET || "";
-
-/* -------------------------------------------------
-   BUILD WC API URL
-------------------------------------------------- */
-function wcURL(path: string, params: Record<string, any> = {}): string {
-  const qp: Record<string, any> = {
-    consumer_key: key,
-    consumer_secret: secret,
-  };
-
-  Object.assign(qp, params);
-
-  return `${base.replace(/\/$/, "")}/wp-json/wc/v3/${path}?${new URLSearchParams(qp)}`;
-}
-
-/* -------------------------------------------------
-   GET ALL PRODUCTS
+   GET ALL PRODUCTS (MOCK)
 ------------------------------------------------- */
 export async function getProducts(params: Record<string, any> = {}): Promise<Product[]> {
-  let page = 1;
-  const perPage = params.per_page ?? 100;
-  const all: Product[] = [];
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-  while (true) {
-    const res = await fetch(
-      wcURL("products", {
-        per_page: perPage,
-        page,
-        status: "publish",
-        ...params,
-      })
+  let filtered = [...localProducts];
+
+  // Simple filtering (expand as needed)
+  if (params.category) {
+    filtered = filtered.filter(p =>
+      p.categories?.some(c => c.id === params.category || c.slug === params.category)
     );
-
-    if (!res.ok) throw new Error(`Failed to load products: ${res.status}`);
-
-    const items: Product[] = await res.json();
-    if (!items.length) break;
-
-    all.push(...items);
-    if (items.length < perPage) break;
-
-    page++;
   }
 
-  return all;
+  // Sorting
+  if (params.orderby === 'price') {
+    filtered.sort((a, b) => {
+      const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
+      const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
+      return params.order === 'desc' ? priceB - priceA : priceA - priceB;
+    });
+  }
+
+  // Pagination (basic)
+  if (params.limit) {
+    filtered = filtered.slice(0, params.limit);
+  }
+
+  return filtered;
 }
 
 /* -------------------------------------------------
-   GET SINGLE PRODUCT
+   GET SINGLE PRODUCT (MOCK)
 ------------------------------------------------- */
 export async function getProduct(id: number): Promise<Product> {
-  const res = await fetch(wcURL(`products/${id}`));
-  if (!res.ok) throw new Error("Failed to load product");
-  return res.json();
+  await new Promise(resolve => setTimeout(resolve, 300));
+  const product = localProducts.find(p => p.id === id);
+  if (!product) throw new Error("Product not found");
+  return product;
 }
 
 /* -------------------------------------------------
-   GET ALL CATEGORIES  ⭐ FIXED ⭐
+   GET ALL CATEGORIES (MOCK)
 ------------------------------------------------- */
 export async function getCategories(): Promise<WcCategory[]> {
-  const res = await fetch(
-    wcURL("products/categories", {
-      per_page: 100,
-      orderby: "menu_order",
-      order: "asc",
-      hide_empty: false, // <--- REQUIRED
-    })
-  );
+  await new Promise(resolve => setTimeout(resolve, 300));
 
-  // Debug log
-  const data = await res.clone().json();
-  console.log("🔥 CATEGORIES FROM API:", data);
+  // Transform categories.json to WcCategory array
+  const cats: WcCategory[] = [];
+  let idCounter = 100;
 
-  if (!res.ok) {
-    throw new Error(`Failed to load categories: ${res.status}`);
-  }
+  Object.entries(categoriesData).forEach(([slug, data]: [string, any]) => {
+    const parentId = idCounter++;
+    cats.push({
+      id: parentId,
+      name: data.name,
+      slug: slug,
+      parent: 0,
+      image: { src: data.image }
+    });
 
-  return data;
+    if (data.subcategories) {
+      data.subcategories.forEach((sub: any) => {
+        cats.push({
+          id: idCounter++,
+          name: sub.name,
+          slug: sub.slug,
+          parent: parentId
+        });
+      });
+    }
+  });
+
+  return cats;
 }
 
 /* -------------------------------------------------
-   GET CATEGORY BY SLUG
+   GET CATEGORY BY SLUG (MOCK)
 ------------------------------------------------- */
 export async function getCategoryBySlug(slug: string): Promise<WcCategory | null> {
   const categories = await getCategories();
@@ -125,17 +119,12 @@ export async function getSubcategories(parentId: number): Promise<WcCategory[]> 
    GET SUBCATEGORIES (BY SLUG)
 ------------------------------------------------- */
 export async function getSubcategoriesBySlug(slug: string) {
-  try {
-    const categories = await getCategories();
-    const parent = categories.find((c) => c.slug === slug);
+  const categories = await getCategories();
+  const parent = categories.find((c) => c.slug === slug);
 
-    if (!parent) return [];
+  if (!parent) return [];
 
-    return categories.filter((c) => c.parent === parent.id);
-  } catch (err) {
-    console.error("❌ getSubcategoriesBySlug failed:", err);
-    return [];
-  }
+  return categories.filter((c) => c.parent === parent.id);
 }
 
 /* -------------------------------------------------
@@ -160,25 +149,13 @@ export async function resolveCategoryPath(slugs: string[]): Promise<WcCategory[]
 }
 
 /* -------------------------------------------------
-   GET PRODUCTS FOR CATEGORY SLUG
+   GET PRODUCTS FOR CATEGORY SLUG (MOCK)
 ------------------------------------------------- */
 export async function getProductsForCategoryPath(slug: string): Promise<Product[]> {
-  try {
-    const category = await getCategoryBySlug(slug);
-    if (!category) return [];
+  const category = await getCategoryBySlug(slug);
+  if (!category) return [];
 
-    const res = await fetch(
-      wcURL("products", {
-        per_page: 100,
-        category: category.id,
-      })
-    );
-
-    if (!res.ok) return [];
-
-    return await res.json();
-  } catch (err) {
-    console.error("❌ Product load failed:", err);
-    return [];
-  }
+  // In a real mock, we would filter by category ID or hierarchically
+  // For now, just return all or random subset to show something
+  return localProducts.filter(p => p.categories?.some(c => c.slug === slug || c.slug === category.slug));
 }
