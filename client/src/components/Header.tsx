@@ -281,28 +281,39 @@ export function Header() {
                     {category.name}
                   </NavigationMenuTrigger>
 
-                  <NavigationMenuContent className="bg-white shadow-xl rounded-xl border border-gray-100">
-                    <div className="flex flex-col gap-2 p-5 w-[260px]">
+                  <NavigationMenuContent className="bg-[#003C32] shadow-xl rounded-b-xl border-x border-b border-[#C8A46A]/20 -mt-1">
+                    <div className="flex flex-row p-4 w-[400px] gap-4">
 
-                      {/* VIEW ALL */}
-                      <Link href={`/${category.slug}`}>
-                        <span className="font-semibold text-[#003C32] hover:text-[#C8A46A]">
-                          View all {category.name}
-                        </span>
-                      </Link>
+                      {/* VIEW ALL SECTION */}
+                      <div className="flex-shrink-0 w-1/3 border-r border-[#C8A46A]/20 pr-4">
+                        <Link href={`/${category.slug}`}>
+                          <div className="group cursor-pointer">
+                            <h3 className="text-xl font-serif text-[#C8A46A] mb-2 group-hover:text-white transition-colors duration-300">
+                              {category.name}
+                            </h3>
+                            <span className="text-sm text-gray-300 group-hover:text-[#C8A46A] transition-colors underline decoration-[#C8A46A]/50 underline-offset-4">
+                              View All Collection
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
 
-                      {/* SUBCATEGORY LINKS */}
-                      {Array.isArray(subcategories[category.slug]) && (
-                        <div className="mt-2 flex flex-col gap-1 text-sm">
-                          {subcategories[category.slug].map(sub => (
-                            <Link key={sub.slug} href={`/${category.slug}/${sub.slug}`}>
-                              <span className="cursor-pointer text-[#003C32] hover:text-[#C8A46A]">
-                                {sub.name}
-                              </span>
-                            </Link>
-                          ))}
-                        </div>
-                      )}
+                      {/* SUBCATEGORY LINKS OR GRID */}
+                      <div className="flex-grow">
+                        {Array.isArray(subcategories[category.slug]) && subcategories[category.slug].length > 0 ? (
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                            {subcategories[category.slug].map(sub => (
+                              <Link key={sub.slug} href={`/${category.slug}/${sub.slug}`}>
+                                <span className="block text-sm text-gray-200 hover:text-[#C8A46A] cursor-pointer transition-colors duration-200 py-1">
+                                  {sub.name}
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-400 italic">Explore our exclusive {category.name} collection.</p>
+                        )}
+                      </div>
 
                     </div>
                   </NavigationMenuContent>
