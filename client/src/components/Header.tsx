@@ -271,30 +271,30 @@ export function Header() {
 
         {/* DESKTOP NAV */}
         <nav className="hidden lg:flex justify-center items-center border-t border-transparent bg-[#003C32] px-6 shadow-md">
-          <NavigationMenu className="mx-auto">
-            <NavigationMenuList className="gap-2">
+          <NavigationMenu className="mx-auto max-w-7xl w-full">
+            <NavigationMenuList className="gap-6 w-full justify-center">
 
               {categories.map(category => (
                 <NavigationMenuItem key={category.slug}>
 
-                  <NavigationMenuTrigger className="h-12 font-medium text-white hover:text-[#C8A46A] bg-transparent transition">
+                  <NavigationMenuTrigger className="h-14 font-medium text-white hover:text-[#C8A46A] bg-transparent transition">
                     {category.name}
                   </NavigationMenuTrigger>
 
                   <NavigationMenuContent className="bg-[#003C32] shadow-xl rounded-b-xl border-x border-b border-[#C8A46A]/20 -mt-1">
-                    <div className="flex flex-row p-4 w-[400px] gap-4">
+                    <div className="flex flex-row p-6 w-[90vw] max-w-7xl gap-8 min-h-[350px] justify-center">
 
                       {/* VIEW ALL SECTION */}
-                      <div className="flex-shrink-0 w-1/3 border-r border-[#C8A46A]/20 pr-4">
+
+                      <div className="w-1/4 pt-2 border-r border-brandGold/10 pr-8">
+                        <h3 className="font-serif text-2xl text-[#C8A46A] italic">{category.name}</h3>
+                        <p className="text-gray-500 font-sans text-sm mb-6 leading-relaxed">
+                          Explore our exquisite collection of {category.name.toLowerCase()}, crafted for moments that last forever.
+                        </p>
                         <Link href={`/${category.slug}`}>
-                          <div className="group cursor-pointer">
-                            <h3 className="text-xl font-serif text-[#C8A46A] mb-2 group-hover:text-white transition-colors duration-300">
-                              {category.name}
-                            </h3>
-                            <span className="text-sm text-gray-300 group-hover:text-[#C8A46A] transition-colors underline decoration-[#C8A46A]/50 underline-offset-4">
-                              View All Collection
-                            </span>
-                          </div>
+                          <Button variant="outline" className="border-[#C8A46A] text-[#C8A46A] hover:bg-brandDarkTeal hover:text-white rounded-none font-serif uppercase tracking-widest text-xs w-full">
+                            View All
+                          </Button>
                         </Link>
                       </div>
 
@@ -314,6 +314,17 @@ export function Header() {
                           <p className="text-sm text-gray-400 italic">Explore our exclusive {category.name} collection.</p>
                         )}
                       </div>
+                      <div className="w-1/4 flex-shrink-0 relative group overflow-hidden rounded-sm">
+                        {/* Placeholder for visual - using a gradient/texture if no image */}
+                        <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors duration-500"></div>
+                        <div className="h-full w-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 border border-[#C8A46A]/20 m-2">
+                          <p className="font-serif text-2xl text-[#C8A46A] italic">The {category.name} Edit</p>
+                          <div className="w-12 h-[1px] bg-[#C8A46A] my-4"></div>
+                          <span className="text-xs tracking-[0.2em] text-[#C8A46A] uppercase">Discover</span>
+                        </div>
+                      </div>
 
                     </div>
                   </NavigationMenuContent>
@@ -323,6 +334,7 @@ export function Header() {
 
             </NavigationMenuList>
 
+            <NavigationMenuViewport />
           </NavigationMenu>
         </nav>
 
