@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { Search, Heart, User, ShoppingCart, Menu, LogOut, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,95 +20,16 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
 import { CartDrawer } from "@/components/CartDrawer";
 import { useCart } from "@/lib/cart-store";
 import { useAuth } from "@/lib/auth-context";
 import { useWishlist } from "@/lib/wishlist-store";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories, type WcCategory } from "@/lib/woocommerce";
 
-// MAIN CATEGORIES
-const categories = [
-  { name: "Necklaces", slug: "necklaces" },
-  { name: "Nosepins", slug: "nosepins" },
-  { name: "Rings", slug: "rings" },
-  { name: "Earrings", slug: "earrings" },
-  { name: "Pendants & Lockets", slug: "pendants-lockets" },
-  { name: "Bracelets", slug: "bracelets" },
-  { name: "Bangles", slug: "bangles" },
-  { name: "Mangalsutra", slug: "mangalsutra" },
-  { name: "Men's Collection", slug: "mens-collection" },
-  { name: "Kids Collection", slug: "kids-collection" },
-];
-
-// FULL SUBCATEGORY MAP (truncated for brevity, ensure existing map is preserved or imported if large)
-const subcategories: Record<string, { name: string; slug: string }[]> = {
-  necklaces: [
-    { name: "Daily Wear", slug: "daily-wear" },
-    { name: "Solitaire", slug: "solitaire" },
-    { name: "Bridal", slug: "bridal" },
-    { name: "Choker", slug: "choker" },
-    { name: "Y", slug: "y" },
-    { name: "Bar", slug: "bar" },
-    { name: "Adjustable", slug: "adjustable" },
-  ],
-  nosepins: [
-    { name: "Solitaire", slug: "solitaire" },
-    { name: "Designer", slug: "designer" },
-    { name: "Rings", slug: "rings" },
-    { name: "Nathi", slug: "nathi" },
-  ],
-  rings: [
-    { name: "Daily Wear", slug: "daily-wear" },
-    { name: "Solitaires", slug: "solitaires" },
-    { name: "Bands", slug: "bands" },
-    { name: "Cocktail", slug: "cocktail" },
-    { name: "Platinum", slug: "platinum" },
-  ],
-  earrings: [
-    { name: "Studs", slug: "studs" },
-    { name: "Hoops", slug: "hoops" },
-    { name: "Drop & Jhumka", slug: "drop-jhumka" },
-  ],
-  "pendants-lockets": [
-    { name: "Daily Wear", slug: "daily-wear" },
-    { name: "Solitaire", slug: "solitaire" },
-    { name: "Cluster", slug: "cluster" },
-    { name: "Alphabet", slug: "alphabet" },
-  ],
-  bracelets: [
-    { name: "Chain Bracelet", slug: "chain-bracelet" },
-    { name: "Adjustable Bracelet", slug: "adjustable-bracelet" },
-    { name: "Flexible Bracelet", slug: "flexible-bracelet" },
-    { name: "Tennis Bracelet", slug: "tennis-bracelet" },
-  ],
-  bangles: [
-    { name: "Daily Wear Bangles", slug: "daily-wear-bangles" },
-    { name: "Bridal Bangles", slug: "bridal-bangles" },
-    { name: "Noya", slug: "noya" },
-  ],
-  mangalsutra: [
-    { name: "Pendant", slug: "mangalsutra-pendant" },
-    { name: "Chain", slug: "mangalsutra-chain" },
-    { name: "Bracelet", slug: "mangalsutra-bracelet" },
-    { name: "Solitaire", slug: "solitaire-mangalsutra" },
-  ],
-  "mens-collection": [
-    { name: "Rings", slug: "rings" },
-    { name: "Studs", slug: "studs" },
-    { name: "Bracelet", slug: "bracelet" },
-    { name: "Kada", slug: "kada" },
-    { name: "Chains", slug: "chains" },
-    { name: "Pendant", slug: "pendant" },
-  ],
-  "kids-collection": [
-    { name: "Rings", slug: "rings" },
-    { name: "Bracelets & Bangles", slug: "bracelets-bangles" },
-    { name: "Pendants", slug: "pendants" },
-    { name: "Earrings", slug: "earrings" },
-  ],
-};
+import { cn } from "@/lib/utils"; // Assuming you have a standard cn utility
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -122,6 +43,25 @@ export function Header() {
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useLocation();
+
+  // -- DYNAMIC CATEGORY FETCHING --
+  const { data: allCategories = [], isLoading } = useQuery<WcCategory[]>({
+    queryKey: ["header-categories"],
+    queryFn: () => getCategories(),
+    staleTime: 1000 * 60 * 5, // Cache for 5 mins
+  });
+
+  // Calculate Navigation Tree
+  const navTree = useMemo(() => {
+    const parents = allCategories
+      .filter(c => c.parent === 0 && c.slug !== "uncategorized")
+      .sort((a, b) => a.name.localeCompare(b.name)); // Optional: Sort alphabetically or by menu_order if available
+
+    return parents.map(parent => ({
+      ...parent,
+      children: allCategories.filter(c => c.parent === parent.id)
+    }));
+  }, [allCategories]);
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -153,7 +93,7 @@ export function Header() {
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="left" className="w-80 bg-white text-[#0E2220]">
+              <SheetContent side="left" className="w-80 bg-white text-[#0E2220] overflow-y-auto">
                 <div className="flex flex-col gap-6 mt-10">
 
                   {/* MOBILE LOGO */}
@@ -165,12 +105,26 @@ export function Header() {
 
                   {/* MOBILE CATEGORY LIST */}
                   <div className="flex flex-col gap-5 mt-6">
-                    {categories.map(cat => (
-                      <Link key={cat.slug} href={`/${cat.slug}`} onClick={() => setIsMenuOpen(false)}>
-                        <span className="text-xl font-medium hover:text-[#C8A46A] transition">
-                          {cat.name}
-                        </span>
-                      </Link>
+                    {navTree.map(cat => (
+                      <div key={cat.id} className="flex flex-col gap-2">
+                        <Link href={`/${cat.slug}`} onClick={() => setIsMenuOpen(false)}>
+                          <span className="text-xl font-medium hover:text-[#C8A46A] transition">
+                            {cat.name}
+                          </span>
+                        </Link>
+                        {/* Mobile Subcategories */}
+                        {cat.children.length > 0 && (
+                          <div className="pl-4 flex flex-col gap-1 border-l-2 border-[#f0e6d2]">
+                            {cat.children.map(sub => (
+                              <Link key={sub.id} href={`/${cat.slug}/${sub.slug}`} onClick={() => setIsMenuOpen(false)}>
+                                <span className="text-sm text-gray-600 hover:text-[#C8A46A] py-1 block">
+                                  {sub.name}
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
 
@@ -270,15 +224,19 @@ export function Header() {
         <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
 
         {/* DESKTOP NAV */}
-        <nav className="hidden lg:flex justify-center items-center border-t border-transparent bg-[#003C32] px-6 shadow-md">
+        <nav className="hidden lg:flex justify-center items-center border-t border-transparent bg-[#003C32] px-6 shadow-md min-h-[48px]">
           <NavigationMenu className="mx-auto">
-            <NavigationMenuList className="gap-2">
+            <NavigationMenuList className="gap-2 flex-wrap justify-center">
 
-              {categories.map(category => (
-                <NavigationMenuItem key={category.slug}>
+              {navTree.map(category => (
+                <NavigationMenuItem key={category.id}>
 
-                  <NavigationMenuTrigger className="h-12 font-medium text-white hover:text-[#C8A46A] bg-transparent transition">
-                    {category.name}
+                  <NavigationMenuTrigger
+                    className="h-12 font-medium text-white hover:text-[#C8A46A] bg-transparent transition focus:bg-transparent active:bg-transparent data-[state=open]:bg-[#002A24]"
+                  >
+                    <Link href={`/${category.slug}`}>
+                      {category.name}
+                    </Link>
                   </NavigationMenuTrigger>
 
                   <NavigationMenuContent className="bg-white shadow-xl rounded-xl border border-gray-100">
@@ -286,22 +244,24 @@ export function Header() {
 
                       {/* VIEW ALL */}
                       <Link href={`/${category.slug}`}>
-                        <span className="font-semibold text-[#003C32] hover:text-[#C8A46A]">
+                        <span className="font-semibold text-[#003C32] hover:text-[#C8A46A] block mb-2 pb-2 border-b border-gray-100">
                           View all {category.name}
                         </span>
                       </Link>
 
                       {/* SUBCATEGORY LINKS */}
-                      {Array.isArray(subcategories[category.slug]) && (
-                        <div className="mt-2 flex flex-col gap-1 text-sm">
-                          {subcategories[category.slug].map(sub => (
-                            <Link key={sub.slug} href={`/${category.slug}/${sub.slug}`}>
-                              <span className="cursor-pointer text-[#003C32] hover:text-[#C8A46A]">
+                      {category.children.length > 0 ? (
+                        <div className="flex flex-col gap-1 text-sm max-h-[300px] overflow-y-auto">
+                          {category.children.map(sub => (
+                            <Link key={sub.id} href={`/${category.slug}/${sub.slug}`}>
+                              <span className="cursor-pointer text-[#003C32] hover:text-[#C8A46A] py-1 block">
                                 {sub.name}
                               </span>
                             </Link>
                           ))}
                         </div>
+                      ) : (
+                        <div className="text-xs text-gray-400 italic">No subcategories</div>
                       )}
 
                     </div>
@@ -309,6 +269,12 @@ export function Header() {
 
                 </NavigationMenuItem>
               ))}
+
+              {navTree.length === 0 && !isLoading && (
+                <div className="text-white/70 py-3 text-sm italic">
+                  Loading Categories... (Check API Keys)
+                </div>
+              )}
 
             </NavigationMenuList>
 

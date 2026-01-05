@@ -29,6 +29,13 @@ export default defineConfig({
     fs: {
       strict: true,
       deny: ["**/.*"]
+    },
+    proxy: {
+      "/api/wc": {
+        target: "https://darkgray-rail-803191.hostingersite.com/wp-json/wc/v3",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/wc/, ""),
+      },
     }
   }
 });

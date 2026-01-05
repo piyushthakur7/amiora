@@ -1,13 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { getProducts } from "@/lib/woocommerce";
 
-interface Product {
-  id: number;
-  name: string;
-  price: string;
-  image: { src: string };
-  permalink: string;
-}
+import { Product } from "@/types/Product";
 
 interface ProductGridProps {
   categorySlug?: string;
@@ -24,17 +19,15 @@ export default function ProductGrid({ categorySlug, categoryId }: ProductGridPro
 
   const fetchProducts = async () => {
     try {
-      let url = "/api/woocommerce/products?";
-
+      const params: any = {};
       if (categoryId) {
-        url += `categoryId=${categoryId}`;
+        params.category = categoryId;
       } else if (categorySlug) {
-        url += `category=${categorySlug}`;
+        params.category = categorySlug;
       }
 
-      const response = await fetch(url);
-      const data = await response.json();
-      setProducts(data.products);
+      const data = await getProducts(params);
+      setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -49,7 +42,7 @@ export default function ProductGrid({ categorySlug, categoryId }: ProductGridPro
       {products.map((product) => (
         <div key={product.id} className="border rounded-lg p-4 hover:shadow-lg">
           <img
-            src={product.image?.src || "/placeholder.jpg"}
+            src={product.images?.[0]?.src || "/placeholder.jpg"}
             alt={product.name}
             className="w-full h-48 object-cover rounded mb-4"
           />
@@ -57,7 +50,7 @@ export default function ProductGrid({ categorySlug, categoryId }: ProductGridPro
           <p className="text-xl font-bold text-gray-900">{product.price}</p>
 
           <a
-            href={product.permalink}
+            href={`/product/${product.slug}`} // Assuming product page route
             className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
           >
             View Product
