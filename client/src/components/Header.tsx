@@ -34,6 +34,7 @@ export function Header() {
 
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [, setLocation] = useLocation();
 
   // -- DYNAMIC CATEGORY FETCHING --
@@ -97,29 +98,33 @@ export function Header() {
             </Link>
           </div>
 
-          {/* SEARCH BAR */}
-          <div className="hidden md:flex flex-1 max-w-xl mx-8">
-            <div className="relative w-full">
-              <Input
-                type="search"
-                placeholder="Search for Diamond Jewellery & More…"
-                className="pl-12 pr-4 py-3 rounded-full border border-white/20 bg-white/10 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-[#C8A46A]/50 focus:border-[#C8A46A]/50 text-white placeholder:text-white/60 transition"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70 cursor-pointer hover:text-white transition"
-                onClick={() => handleSearch()}
-              />
-            </div>
-          </div>
-
           {/* ICONS */}
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="md:hidden text-white" onClick={() => setLocation("/shop")}>
-              <Search className="h-6 w-6" />
-            </Button>
+          <div className="flex items-center gap-2">
+
+            {/* EXPANDABLE SEARCH */}
+            <div className="flex items-center">
+              <div className={cn(
+                "transition-all duration-500 ease-in-out overflow-hidden flex items-center",
+                isSearchOpen ? "w-40 md:w-60 opacity-100 mr-2" : "w-0 opacity-0"
+              )}>
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="h-9 rounded-full border-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-white/50 focus:ring-[#C8A46A]/50 focus:border-[#C8A46A]/50"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:scale-110 transition shrink-0"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+              >
+                <Search className="h-6 w-6" />
+              </Button>
+            </div>
 
             <Link href="/wishlist">
               <Button variant="ghost" size="icon" className="relative hover:scale-110 transition duration-200 text-white">

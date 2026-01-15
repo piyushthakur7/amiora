@@ -1,6 +1,10 @@
 
 import { Link } from "wouter";
-import { NavCategory } from "./MainNavigation";
+import { WcCategory } from "@/lib/woocommerce";
+
+export interface NavCategory extends WcCategory {
+    children: WcCategory[];
+}
 
 interface MainNavigationProps {
     navTree: NavCategory[];
@@ -9,7 +13,7 @@ interface MainNavigationProps {
 
 export function MainNavigation({ navTree, isLoading }: MainNavigationProps) {
     return (
-        <nav className="hidden lg:flex justify-center items-center border-t border-white/10 bg-black/20 backdrop-blur-sm px-6 shadow-md min-h-[48px] z-50 relative">
+        <nav className="hidden lg:flex justify-center items-center px-6 min-h-[48px] z-50 relative bg-transparent">
             <ul className="flex flex-row gap-8 justify-center items-center m-0 p-0 list-none">
                 {navTree.map((category, index) => (
                     <li key={category.id} className="group relative h-12 flex items-center">

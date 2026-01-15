@@ -5,64 +5,58 @@ export function Preloader() {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Show content after brief delay
-    const contentTimer = setTimeout(() => setShowContent(true), 100);
+    // Show content immediately
+    setShowContent(true);
 
     // Hide preloader after animation completes
     const hideTimer = setTimeout(() => setHide(true), 2500);
 
-    return () => {
-      clearTimeout(contentTimer);
-      clearTimeout(hideTimer);
-    };
+    return () => clearTimeout(hideTimer);
   }, []);
 
   return (
-    <div
-      className={`fixed inset-0 
-        bg-[#0F2A28] 
-        flex flex-col items-center justify-center gap-6
-        transition-opacity duration-700
-        ${hide ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-      style={{ zIndex: 9999 }}
-    >
-      {/* Logo with fade and scale animation */}
-      <div className={`transition-all duration-1000 ${showContent ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
-        <img
-          src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
-          alt="Brand Logo"
-          className="w-32 sm:w-40 md:w-48 h-auto drop-shadow-[0_0_20px_rgba(200,164,106,0.4)]"
-        />
-      </div>
-
-      {/* Animated text */}
-      <div className="flex gap-1 overflow-hidden">
-        {["A", "M", "I", "O", "R", "A"].map((letter, index) => (
-          <span
-            key={index}
-            className={`font-serif text-3xl md:text-4xl tracking-[0.3em] text-[#C8A46A] transition-all duration-500`}
-            style={{
-              opacity: showContent ? 1 : 0,
-              transform: showContent ? "translateY(0)" : "translateY(20px)",
-              transitionDelay: `${index * 100 + 300}ms`
-            }}
-          >
-            {letter}
-          </span>
-        ))}
-      </div>
-
-      {/* Subtitle */}
+    <>
+      <style>
+        {`
+          @keyframes shimmer {
+            0% { transform: translateX(-150%) skewX(-20deg); }
+            50% { transform: translateX(150%) skewX(-20deg); }
+            100% { transform: translateX(150%) skewX(-20deg); }
+          }
+          .animate-shimmer {
+            animation: shimmer 2.5s infinite;
+          }
+        `}
+      </style>
       <div
-        className={`font-sans text-xs md:text-sm tracking-[0.4em] text-[#C8A46A]/60 uppercase transition-all duration-700`}
-        style={{
-          opacity: showContent ? 1 : 0,
-          transform: showContent ? "translateY(0)" : "translateY(10px)",
-          transitionDelay: "900ms"
-        }}
+        className={`fixed inset-0 
+          bg-[#0A1817] 
+          flex flex-col items-center justify-center
+          transition-opacity duration-700 ease-in-out
+          ${hide ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+        style={{ zIndex: 9999 }}
       >
-        DIAMONDS
+        {/* Logo Container with Shine Effect */}
+        <div
+          className={`relative overflow-hidden p-2 transition-all duration-1000 ease-out transform
+            ${showContent ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+        >
+          <img
+            src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
+            alt="Amiora Diamonds"
+            className="w-48 sm:w-64 md:w-80 h-auto object-contain drop-shadow-2xl"
+          />
+
+          {/* Shine Overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none animate-shimmer"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 30%, rgba(200,164,106,0.6) 50%, rgba(255,255,255,0.1) 70%, transparent 100%)',
+              mixBlendMode: 'overlay',
+            }}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
