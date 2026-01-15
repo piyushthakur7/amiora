@@ -82,18 +82,27 @@ export default function CategoryPageLayout({
         });
     }, [categoryProducts, priceRange]);
 
-    // 4. Sidebar Categories (Top level)
+    // 4. Sidebar Categories (Top level + Children)
     const sidebarCategories = useMemo(() => {
         if (!categoriesData) return [];
         return categoriesData
             .filter(c => c.parent === 0)
             .map(cat => {
-                // Use count from API if available, else 0
+                // Find subcategories for this parent
+                const children = categoriesData
+                    .filter(c => c.parent === cat.id)
+                    .map(child => ({
+                        name: child.name,
+                        slug: child.slug,
+                        count: child.count || 0
+                    }));
+
                 return {
                     name: cat.name,
                     slug: cat.slug,
                     count: cat.count || 0,
-                    isActive: cat.slug === categorySlug
+                    isActive: cat.slug === categorySlug,
+                    children: children // Include children in the structure
                 };
             });
     }, [categoriesData, categorySlug]);

@@ -2,12 +2,13 @@ import { Instagram, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function InstagramFeed() {
-  // Using local production images for the feed.
-  const images = [
-    "/images/p1.jpg",
-    "/images/p2.jpg",
-    "/images/p3.jpg",
-    "/images/p1.jpg"
+  // Using local video files for the feed (Reels).
+  // Please ensure 'reel1.mp4', 'reel2.mp4', 'reel3.mp4', 'reel4.mp4' are present in 'client/public/videos/'.
+  const videos = [
+    "/videos/reel1.mp4",
+    "/videos/reel2.mp4",
+    "/videos/reel3.mp4",
+    "/videos/reel4.mp4"
   ];
 
   return (
@@ -23,12 +24,15 @@ export function InstagramFeed() {
 
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {images.map((src, i) => (
+          {videos.map((src, i) => (
             <div key={i} className="relative aspect-[9/16] w-full rounded-xl overflow-hidden shadow-lg border border-[#e4d7b8] group">
-              <img
+              <video
                 src={src}
-                alt="Amiora Journey"
-                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 hover:scale-105"
+                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
+                autoPlay
+                loop
+                muted
+                playsInline
               />
               {/* Optional overlay to make it look clickable/interactive */}
               <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />

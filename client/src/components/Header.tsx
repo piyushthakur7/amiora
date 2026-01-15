@@ -199,10 +199,9 @@ export function Header() {
 
         <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
 
-        {/* DESKTOP NAV (CONDITIONAL) */}
         <div className={cn(
-          "transition-all duration-500 ease-in-out overflow-hidden origin-top",
-          isCategoryOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          "transition-all duration-500 ease-in-out origin-top",
+          isCategoryOpen ? "max-h-[500px] opacity-100 overflow-visible" : "max-h-0 opacity-0 overflow-hidden"
         )}>
           <MainNavigation navTree={navTree} isLoading={isLoading} />
         </div>

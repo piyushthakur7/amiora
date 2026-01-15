@@ -16,6 +16,11 @@ interface SidebarFilterProps {
         slug: string;
         count: number;
         isActive?: boolean;
+        children?: {
+            name: string;
+            slug: string; // just the child slug
+            count: number;
+        }[];
     }[];
     minPrice: number;
     maxPrice: number;
@@ -69,19 +74,35 @@ export function SidebarFilter({
                 <h3 className="font-serif text-xl font-medium text-foreground mb-4">Shop By Category</h3>
                 <div className="space-y-1">
                     {categories.map((category) => (
-                        <Link key={category.slug} href={`/category/${category.slug}`}>
-                            <div
-                                className={cn(
-                                    "flex items-center justify-between py-2 px-2 rounded-md cursor-pointer transition-all",
-                                    category.isActive
-                                        ? "bg-primary/10 text-primary font-medium"
-                                        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-                                )}
-                            >
-                                <span className="text-sm">{category.name}</span>
-                                <span className="text-xs opacity-60">({category.count})</span>
-                            </div>
-                        </Link>
+                        <div key={category.slug}>
+                            <Link href={`/${category.slug}`}>
+                                <div
+                                    className={cn(
+                                        "flex items-center justify-between py-2 px-2 rounded-md cursor-pointer transition-all",
+                                        category.isActive
+                                            ? "bg-primary/10 text-primary font-medium"
+                                            : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                                    )}
+                                >
+                                    <span className="text-sm">{category.name}</span>
+                                    <span className="text-xs opacity-60">({category.count})</span>
+                                </div>
+                            </Link>
+
+                            {/* Subcategories (Show if active parent) */}
+                            {category.isActive && category.children && category.children.length > 0 && (
+                                <div className="ml-4 pl-2 border-l border-border/50 mt-1 space-y-1">
+                                    {category.children.map(child => (
+                                        <Link key={child.slug} href={`/${category.slug}/${child.slug}`}>
+                                            <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-secondary/30 cursor-pointer text-muted-foreground hover:text-primary transition-colors">
+                                                <span className="text-sm font-light">{child.name}</span>
+                                                <span className="text-[10px] opacity-50">({child.count})</span>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </div>
             </div>

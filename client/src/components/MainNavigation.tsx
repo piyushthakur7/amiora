@@ -39,38 +39,29 @@ export function MainNavigation({ navTree, isLoading }: MainNavigationProps) {
                         </Link>
 
                         {/* DROPDOWN MENU */}
-                        <div className={`absolute top-[90%] pt-4 hidden group-hover:block hover:block z-50 ${index >= navTree.length - 3 ? "right-0" : "left-0"
-                            }`}>
-                            <div className="bg-[#003C32] shadow-2xl rounded-xl border border-[#C8A46A]/20 overflow-hidden min-w-[320px] max-w-[400px] animate-in fade-in slide-in-from-top-2 duration-200">
-                                <div className="flex flex-col p-6 gap-5">
+                        <div className={`absolute top-full pt-4 hidden group-hover:block hover:block z-50 ${index >= navTree.length - 3 ? "right-0" : "left-0"}`}>
+                            <div className={`bg-[#003C32]/95 backdrop-blur-md shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] border border-[#C8A46A]/20 rounded-xl p-6 animate-in fade-in slide-in-from-top-2 duration-300 ${category.children.length > 6 ? "w-[600px]" : "w-[300px]"}`}>
+                                {/* HEADER / VIEW ALL */}
+                                <Link href={`/${category.slug}`}>
+                                    <span className="font-serif text-2xl text-white hover:text-[#C8A46A] border-b border-white/10 pb-3 mb-4 cursor-pointer transition-colors flex items-center justify-between group/link">
+                                        View all {category.name}
+                                        <span className="opacity-0 group-hover/link:opacity-100 transition-opacity text-xl">→</span>
+                                    </span>
+                                </Link>
 
-                                    {/* VIEW ALL LINK */}
-                                    <div className="w-full">
-                                        <Link href={`/${category.slug}`}>
-                                            <span className="font-serif text-2xl text-white hover:text-[#C8A46A] border-b border-white/10 pb-3 cursor-pointer transition-colors block">
-                                                View all {category.name}
-                                            </span>
-                                        </Link>
-                                    </div>
-
-                                    {/* SUBCATEGORY LIST */}
-                                    <div className="flex flex-col gap-1 w-full pl-1">
-                                        {category.children.length > 0 ? (
-                                            <div className="flex flex-col gap-3">
-                                                {category.children.map((sub) => (
-                                                    <Link key={sub.id} href={`/${category.slug}/${sub.slug}`}>
-                                                        <span className="cursor-pointer text-white/70 hover:text-white hover:translate-x-1 transition-all duration-300 block text-lg font-light tracking-wide hover:[text-shadow:0_0_10px_rgba(255,255,255,0.6)]">
-                                                            {sub.name}
-                                                        </span>
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="text-sm text-gray-400 italic">
-                                                Explore our {category.name} collection
-                                            </div>
-                                        )}
-                                    </div>
+                                {/* LIST */}
+                                <div className={`grid ${category.children.length > 6 ? "grid-cols-2 gap-x-8" : "grid-cols-1"} gap-y-2`}>
+                                    {category.children.length > 0 ? (
+                                        category.children.map((sub) => (
+                                            <Link key={sub.id} href={`/${category.slug}/${sub.slug}`}>
+                                                <span className="cursor-pointer text-white/80 hover:text-white hover:translate-x-1 transition-all duration-300 block text-lg font-light tracking-wide py-1 hover:bg-white/5 px-2 rounded -ml-2">
+                                                    {sub.name}
+                                                </span>
+                                            </Link>
+                                        ))
+                                    ) : (
+                                        <span className="text-gray-500 italic text-sm">No details available</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
