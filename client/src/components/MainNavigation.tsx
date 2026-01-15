@@ -13,13 +13,13 @@ interface MainNavigationProps {
 
 export function MainNavigation({ navTree, isLoading }: MainNavigationProps) {
     return (
-        <nav className="hidden lg:flex justify-center items-center px-6 min-h-[48px] z-50 relative bg-transparent">
-            <ul className="flex flex-row gap-8 justify-center items-center m-0 p-0 list-none">
+        <nav className="hidden lg:flex justify-center items-center px-6 min-h-[48px] z-50 relative bg-transparent pt-6">
+            <ul className="flex flex-row gap-6 justify-center items-center m-0 p-0 list-none">
                 {navTree.map((category, index) => (
                     <li key={category.id} className="group relative h-12 flex items-center">
                         {/* TRIGGER */}
                         <Link href={`/${category.slug}`}>
-                            <span className="font-medium text-white hover:text-[#C8A46A] cursor-pointer px-2 py-1 transition-colors relative z-10 flex items-center gap-1">
+                            <span className="font-medium text-white hover:text-[#C8A46A] cursor-pointer px-2 py-1 transition-colors relative z-10 flex items-center gap-2 tracking-wide whitespace-nowrap">
                                 {category.name}
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"

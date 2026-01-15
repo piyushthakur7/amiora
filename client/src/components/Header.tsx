@@ -35,6 +35,7 @@ export function Header() {
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [, setLocation] = useLocation();
 
   // -- DYNAMIC CATEGORY FETCHING --
@@ -81,25 +82,40 @@ export function Header() {
     >
       <div className="container mx-auto">
 
-        {/* TOP BAR */}
-        <div className="flex items-center justify-between h-20 px-4 md:px-6 lg:px-10">
+        {/* TOP BAR Grid Layout for Perfect Centering */}
+        <div className="grid grid-cols-3 items-center h-28 px-4 md:px-6 lg:px-10">
 
-          {/* MOBILE MENU + LOGO */}
-          <div className="flex items-center gap-6">
+          {/* LEFT: Mobile Nav + Category Toggle */}
+          <div className="flex items-center justify-start gap-4 md:gap-8">
             <MobileNavigation navTree={navTree} />
 
-            {/* LOGO */}
+            {/* Desktop Category Toggle */}
+            <button
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              className="hidden lg:flex items-center gap-2 text-white hover:text-[#C8A46A] transition-colors group"
+            >
+              <span className="text-xl tracking-widest uppercase font-light">Categories</span>
+              <div className={cn("transition-transform duration-300", isCategoryOpen ? "rotate-180" : "rotate-0")}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-70 group-hover:opacity-100">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          {/* CENTER: Logo */}
+          <div className="flex justify-center items-center">
             <Link href="/">
               <img
                 src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
                 alt="Amiora Diamonds"
-                className="h-20 object-contain drop-shadow-md hover:drop-shadow-xl transition-all duration-300 hover:scale-105"
+                className="h-24 md:h-32 object-contain drop-shadow-[0_0_25px_rgba(200,164,106,0.5)] hover:drop-shadow-[0_0_25px_rgba(200,164,106,0.6)] transition-all duration-300 hover:scale-105"
               />
             </Link>
           </div>
 
-          {/* ICONS */}
-          <div className="flex items-center gap-2">
+          {/* RIGHT: Icons & Search */}
+          <div className="flex items-center justify-end gap-2 md:gap-4">
 
             {/* EXPANDABLE SEARCH */}
             <div className="flex items-center">
@@ -183,8 +199,13 @@ export function Header() {
 
         <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
 
-        {/* DESKTOP NAV */}
-        <MainNavigation navTree={navTree} isLoading={isLoading} />
+        {/* DESKTOP NAV (CONDITIONAL) */}
+        <div className={cn(
+          "transition-all duration-500 ease-in-out overflow-hidden origin-top",
+          isCategoryOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+        )}>
+          <MainNavigation navTree={navTree} isLoading={isLoading} />
+        </div>
 
       </div>
     </header>
