@@ -15,11 +15,12 @@ export function CategoryGrid() {
           Explore our curated selections of fine jewelry, designed to celebrate life's most precious moments.
         </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {/* Updated Grid: 5 columns on large screens for 'small and tidy' look */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {entries.map(([slug, cat]) => (
             <Link key={slug} href={`/${slug}`}>
               <div
-                className="relative group overflow-hidden cursor-pointer aspect-[3/4] rounded-lg shadow-md hover:shadow-xl transition-all"
+                className="relative group overflow-hidden cursor-pointer aspect-square rounded-xl shadow-sm hover:shadow-lg transition-all"
               >
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-500 z-10" />
 
@@ -33,7 +34,7 @@ export function CategoryGrid() {
                 />
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-20 p-4 text-center">
-                  <h3 className="font-serif text-xl md:text-2xl text-white tracking-wide mb-2 opacity-95 group-hover:opacity-100 transition-opacity drop-shadow-md">
+                  <h3 className="font-serif text-lg md:text-xl text-white tracking-wide mb-2 opacity-95 group-hover:opacity-100 transition-opacity drop-shadow-md">
                     {cat.name}
                   </h3>
                   <span className="text-white/90 font-sans tracking-widest text-xs uppercase opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 border-b border-white/60 pb-1">

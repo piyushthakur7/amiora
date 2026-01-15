@@ -35,10 +35,45 @@ export function Testimonials() {
       author: "Sayra Sarma",
       rating: 5,
     },
+    {
+      text: "Absolutely stunning collection! I bought a solitaire ring for my engagement, and it sparkles like a dream. The certification process gave me total peace of mind. Thank you Amiora!",
+      author: "Priya Roy",
+      rating: 5,
+    },
+    {
+      text: "The best place for modern jewelry. I love how lightweight and elegant their necklace designs are. Perfect for office wear and parties alike. Great service by the team.",
+      author: "Anjali Gupta",
+      rating: 5,
+    },
+    {
+      text: "Transparent pricing is what I liked the most. No hidden charges, and the gold rate was competitive. The showroom ambiance is also very luxurious and welcoming.",
+      author: "Rahul Verma",
+      rating: 5,
+    },
+    {
+      text: "I was looking for a unique anniversary gift and found the perfect diamond bracelet here. My wife loved it! The packaging was also very premium. Will definitely return.",
+      author: "Amit Debnath",
+      rating: 5,
+    },
+    {
+      text: "Courteous staff and a vast collection of earrings. Whether you want traditional or contemporary, they have it all. Very happy with my purchase.",
+      author: "Sneha Biswas",
+      rating: 5,
+    },
+    {
+      text: "A hidden gem in Kolkata! The designs are exquisite and very different from regular stores. Their custom order service is also top-notch.",
+      author: "Vikram Chatterjee",
+      rating: 5,
+    },
+    {
+      text: "Visited for a nose pin, ended up buying earrings too! The affordable diamond range is surprisingly good. Good finish and shine.",
+      author: "Megha Sen",
+      rating: 5,
+    }
   ];
 
   return (
-    <section className="py-24 bg-[#FAF9F6] text-[#0E2220] relative overflow-hidden text-center">
+    <section className="py-24 bg-background text-[#0E2220] relative overflow-hidden text-center">
       {/* Background Pattern - Subtle Gold Sheen */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#C8A46A]/5 to-transparent opacity-40" />
 
@@ -98,8 +133,9 @@ export function Testimonials() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex -left-12 bg-transparent border-white/20 text-white hover:bg-gold hover:text-primary hover:border-gold" />
-          <CarouselNext className="hidden md:flex -right-12 bg-transparent border-white/20 text-white hover:bg-gold hover:text-primary hover:border-gold" />
+          {/* NAVIGATION BUTTONS - Now Visible on Light Background */}
+          <CarouselPrevious className="hidden md:flex -left-12 bg-white border-[#C8A46A]/50 text-[#0E2220] hover:bg-[#C8A46A] hover:text-white transition-colors h-12 w-12" />
+          <CarouselNext className="hidden md:flex -right-12 bg-white border-[#C8A46A]/50 text-[#0E2220] hover:bg-[#C8A46A] hover:text-white transition-colors h-12 w-12" />
         </Carousel>
 
         <div className="text-center mt-12">

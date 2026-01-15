@@ -87,14 +87,19 @@ export default function Home() {
       <section className="py-24 bg-secondary relative overflow-hidden my-12 border-y border-white/50">
         <div className="absolute inset-0 bg-primary/5 pattern-grid-lg opacity-10" />
         <div className="container mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1 relative">
-            <div className="absolute -inset-4 border border-gold/30 rounded-full animate-spin-slow opacity-50" />
-            <div className="aspect-square bg-white p-4 shadow-xl rotate-3 max-w-md mx-auto relative z-10">
-              <img
-                src="https://images.unsplash.com/photo-1573408301185-a1d3106839b9?q=80&w=2070&auto=format&fit=crop"
-                alt="Featured Ring"
-                className="w-full h-full object-cover"
-              />
+          <div className="order-2 md:order-1 relative flex justify-center">
+            {/* Glow Effect */}
+            <div className="absolute inset-0 bg-[#C8A46A]/20 blur-3xl transform scale-90 rounded-full" />
+
+            {/* Arch Image with Gold Border */}
+            <div className="relative z-10 w-full max-w-sm aspect-[3/4] rounded-t-full border border-[#C8A46A]/30 p-2 shadow-2xl bg-white/50 backdrop-blur-sm">
+              <div className="w-full h-full rounded-t-full overflow-hidden relative">
+                <img
+                  src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=2070&auto=format&fit=crop"
+                  alt="Royal Diamond Necklace"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                />
+              </div>
             </div>
           </div>
           <div className="order-1 md:order-2 text-center md:text-left">
