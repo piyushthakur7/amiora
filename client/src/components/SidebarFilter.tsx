@@ -1,5 +1,6 @@
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Link } from "wouter"
 import { cn } from "@/lib/utils"
 
@@ -14,8 +15,24 @@ interface SidebarFilterProps {
     maxPrice: number;
     priceRange: [number, number];
     onPriceChange: (value: [number, number]) => void;
+
+    // New Filters States
+    selectedMetals?: string[];
+    onMetalChange?: (metal: string) => void;
+
+    selectedPurities?: string[];
+    onPurityChange?: (purity: string) => void;
+
+    selectedGenders?: string[];
+    onGenderChange?: (gender: string) => void;
+
     onFilterApply?: () => void;
 }
+
+const METALS = ["Gold", "Silver", "Platinum", "Rose Gold"];
+const PURITIES = ["14k", "18k", "22k", "24k"];
+const GENDERS = ["Women", "Men", "Kids", "Unisex"];
+// const OCCASIONS = ["Daily Wear", "Party", "Wedding", "Gift"];
 
 export function SidebarFilter({
     categories,
@@ -23,6 +40,12 @@ export function SidebarFilter({
     maxPrice,
     priceRange,
     onPriceChange,
+    selectedMetals = [],
+    onMetalChange,
+    selectedPurities = [],
+    onPurityChange,
+    selectedGenders = [],
+    onGenderChange,
     onFilterApply,
 }: SidebarFilterProps) {
 
@@ -76,7 +99,7 @@ export function SidebarFilter({
                     value={[priceRange[0], priceRange[1]]}
                     min={minPrice}
                     max={maxPrice}
-                    step={100}
+                    step={1000}
                     onValueChange={(val) => onPriceChange([val[0], val[1]])}
                     className="my-6"
                 />
@@ -85,17 +108,92 @@ export function SidebarFilter({
                     <div className="text-sm text-foreground">
                         Price: <span className="font-medium">{formatPrice(priceRange[0])} — {formatPrice(priceRange[1])}</span>
                     </div>
-                    {onFilterApply && (
-                        <Button
-                            onClick={onFilterApply}
-                            size="sm"
-                            className="h-8 bg-amber-500 hover:bg-amber-600 text-white"
-                        >
-                            Filter
-                        </Button>
-                    )}
                 </div>
             </div>
+
+            <div className="h-px bg-border my-6" />
+
+            {/* Metal Filter */}
+            <div className="space-y-4">
+                <h3 className="font-serif text-lg font-medium text-foreground">Metal Type</h3>
+                <div className="space-y-3">
+                    {METALS.map((metal) => (
+                        <div key={metal} className="flex items-center space-x-2">
+                            <Checkbox
+                                id={`metal-${metal}`}
+                                checked={selectedMetals.includes(metal)}
+                                onCheckedChange={() => onMetalChange && onMetalChange(metal)}
+                            />
+                            <label
+                                htmlFor={`metal-${metal}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                                {metal}
+                            </label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="h-px bg-border my-6" />
+
+            {/* Purity Filter */}
+            <div className="space-y-4">
+                <h3 className="font-serif text-lg font-medium text-foreground">Purity</h3>
+                <div className="space-y-3">
+                    {PURITIES.map((purity) => (
+                        <div key={purity} className="flex items-center space-x-2">
+                            <Checkbox
+                                id={`purity-${purity}`}
+                                checked={selectedPurities.includes(purity)}
+                                onCheckedChange={() => onPurityChange && onPurityChange(purity)}
+                            />
+                            <label
+                                htmlFor={`purity-${purity}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                                {purity}
+                            </label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="h-px bg-border my-6" />
+
+            {/* Gender Filter */}
+            <div className="space-y-4">
+                <h3 className="font-serif text-lg font-medium text-foreground">Gender</h3>
+                <div className="space-y-3">
+                    {GENDERS.map((gender) => (
+                        <div key={gender} className="flex items-center space-x-2">
+                            <Checkbox
+                                id={`gender-${gender}`}
+                                checked={selectedGenders.includes(gender)}
+                                onCheckedChange={() => onGenderChange && onGenderChange(gender)}
+                            />
+                            <label
+                                htmlFor={`gender-${gender}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                                {gender}
+                            </label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {onFilterApply && (
+                <div className="pt-6">
+                    <Button
+                        onClick={onFilterApply}
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                    >
+                        Apply Filters
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }
+
