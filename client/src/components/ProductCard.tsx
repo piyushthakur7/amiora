@@ -41,7 +41,7 @@ export function ProductCard({ product }: { product: any }) {
     <Card className="group overflow-hidden border-0 shadow-none bg-transparent hover:bg-transparent transition-none">
       <CardContent className="p-0">
         <Link href={`/product/${slug}`}>
-          <div className="relative aspect-[3/4] overflow-hidden bg-secondary/20">
+          <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
             <img
               src={imgError ? fallbackImage : imageSrc}
               onError={() => setImgError(true)}

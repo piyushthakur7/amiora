@@ -1,4 +1,5 @@
 import type { Product } from "@/types/Product";
+import categoriesData from "@/data/categories.json";
 
 /* -------------------------------------------------
    CONFIG
@@ -35,35 +36,111 @@ export interface WcCategory {
 }
 
 /* -------------------------------------------------
+   DUMMY DATA HELPERS
+------------------------------------------------- */
+const DUMMY_PRODUCTS: Product[] = [
+  {
+    id: 99999,
+    name: "Classic Diamond Solitaire Ring",
+    slug: "classic-diamond-solitaire-ring",
+    price: "45000",
+    regularPrice: "50000",
+    onSale: true,
+    images: [
+      { src: "https://images.unsplash.com/photo-1605100804763-ebea24ea3391?auto=format&fit=crop&q=80&w=800", alt: "Diamond Ring" }
+    ],
+    description: "A stunning piece of jewelry crafted with precision.",
+    shortDescription: "Elegant and timeless.",
+    sku: "DUMMY-001",
+    categories: [{ id: 101, name: "Rings", slug: "rings" }]
+  },
+  {
+    id: 99998,
+    name: "Gold Plated Necklace",
+    slug: "gold-necklace",
+    price: "12000",
+    regularPrice: "15000",
+    onSale: false,
+    images: [
+      { src: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?auto=format&fit=crop&q=80&w=800", alt: "Necklace" }
+    ],
+    description: "Beautiful gold plated necklace.",
+    shortDescription: "Perfect for daily wear.",
+    sku: "DUMMY-002",
+    categories: [{ id: 105, name: "Necklaces", slug: "necklaces" }]
+  },
+  {
+    id: 99997,
+    name: "Elegant Drop Earrings",
+    slug: "elegant-drop-earrings",
+    price: "25000",
+    images: [
+      { src: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800", alt: "Earrings" }
+    ],
+    description: "Sophisticated drop earrings.",
+    shortDescription: "Add a touch of class.",
+    sku: "DUMMY-003",
+    categories: [{ id: 102, name: "Earrings", slug: "earrings" }]
+  }
+];
+
+// Transform categories.json into a flat list of WcCategory
+const getLocalCategories = (): WcCategory[] => {
+  const cats: WcCategory[] = [];
+  let pIdCounter = 1000;
+
+  Object.entries(categoriesData).forEach(([slug, data]) => {
+    const parentId = pIdCounter++;
+
+    // Parent
+    cats.push({
+      id: parentId,
+      name: data.name,
+      slug: slug,
+      parent: 0,
+      description: data.name + " Collection",
+      image: { src: data.image || "" }
+    });
+
+    // Children
+    if (data.subcategories) {
+      data.subcategories.forEach((sub: any, idx: number) => {
+        cats.push({
+          id: parentId * 100 + idx,
+          name: sub.name,
+          slug: sub.slug,
+          parent: parentId,
+          description: sub.name,
+          // Use parent image or placeholder if specific image missing, or rotate dummy images
+          image: { src: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=500" }
+        });
+      });
+    }
+  });
+
+  return cats;
+};
+
+/* -------------------------------------------------
    GET ALL PRODUCTS
-   Example params: { category: 'rings', per_page: 50 }
 ------------------------------------------------- */
 export async function getProducts(params: Record<string, any> = {}): Promise<Product[]> {
+  // Always return dummy products
+  return DUMMY_PRODUCTS;
+
+  /* 
+  // REAL API IMPLEMENTATION (Preserved for future)
   const query = new URLSearchParams({
-    per_page: "50", // Default fetch 50 products
+    per_page: "50", 
     status: "publish",
     ...params,
   });
 
-  // Handle 'category' param: WC API expects 'category' (ID) or 'category_slug' (custom handling needed?)
-  // WC API standard param is 'category' which takes ID.
-  // If we have a slug, we first need to find the category ID or filter client-side (bad for perf) or use 'slug' param?
-  // NOTE: WC API doesn't filter products by category SLUG directly in top-level list endpoint easily without a plugin or looking up ID first.
-  // BUT recent versions might support `category` as ID.
-  // We will assume `params.category` is passed as ID if number, or we handle slug lookup.
-
-  // Checking previous usage in ProductGrid: it passed `category: categoryId` OR `category: categorySlug`.
-  // If it's a slug, we need to resolve it to an ID because WC API usually expects ID for `category` param.
-
-  // Let's resolve slug to ID if needed.
   if (params.category && typeof params.category === "string" && isNaN(Number(params.category))) {
-    // required lookup
     const cat = await getCategoryBySlug(params.category);
     if (cat) {
       query.set("category", cat.id.toString());
     } else {
-      // Category not found, standard fallback or return empty
-      console.warn(`Category slug '${params.category}' not found.`);
       return [];
     }
   }
@@ -83,12 +160,16 @@ export async function getProducts(params: Record<string, any> = {}): Promise<Pro
     console.error("Failed to fetch products from WooCommerce", err);
     return [];
   }
+  */
 }
 
 /* -------------------------------------------------
    GET SINGLE PRODUCT
 ------------------------------------------------- */
 export async function getProduct(id: number): Promise<Product> {
+  const dummy = DUMMY_PRODUCTS.find(p => p.id === id);
+  if (dummy) return dummy;
+
   try {
     const res = await fetch(`${WC_API_URL}/products/${id}`, {
       headers: getAuthHeader(),
@@ -105,6 +186,9 @@ export async function getProduct(id: number): Promise<Product> {
    GET ALL CATEGORIES
 ------------------------------------------------- */
 export async function getCategories(): Promise<WcCategory[]> {
+  return getLocalCategories();
+
+  /*
   try {
     const res = await fetch(`${WC_API_URL}/products/categories?per_page=100&hide_empty=true`, {
       headers: getAuthHeader(),
@@ -115,40 +199,24 @@ export async function getCategories(): Promise<WcCategory[]> {
     console.error(err);
     return [];
   }
+  */
 }
 
 /* -------------------------------------------------
    GET CATEGORY BY SLUG
 ------------------------------------------------- */
 export async function getCategoryBySlug(slug: string): Promise<WcCategory | null> {
-  // Optimization: WC API supports filtering categories by slug? Yes: ?slug=...
-  try {
-    const res = await fetch(`${WC_API_URL}/products/categories?slug=${slug}`, {
-      headers: getAuthHeader(),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.length > 0 ? data[0] : null;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
+  const cats = getLocalCategories();
+  const matched = cats.find(c => c.slug === slug);
+  return matched || null;
 }
 
 /* -------------------------------------------------
    GET SUBCATEGORIES (BY PARENT ID)
 ------------------------------------------------- */
 export async function getSubcategories(parentId: number): Promise<WcCategory[]> {
-  try {
-    const res = await fetch(`${WC_API_URL}/products/categories?parent=${parentId}&per_page=100`, {
-      headers: getAuthHeader(),
-    });
-    if (!res.ok) return [];
-    return await res.json();
-  } catch (err) {
-    console.error(err);
-    return [];
-  }
+  const cats = getLocalCategories();
+  return cats.filter(c => c.parent === parentId);
 }
 
 /* -------------------------------------------------
@@ -164,21 +232,10 @@ export async function getSubcategoriesBySlug(slug: string) {
    RESOLVE CATEGORY PATH
 ------------------------------------------------- */
 export async function resolveCategoryPath(slugs: string[]): Promise<WcCategory[] | null> {
-  // ... (keep logic but use async API calls?)
-  // This is recursive/sequential and might be slow if we do many fetches.
-  // Better to fetch all categories and filter locally if possible, OR standard lookup.
-  // For now, let's keep it simple or implement if needed. 
-  // Let's implement a simplified version looking up the last one?
-  // Or just return null as it's typically used for breadcrumbs.
-
-  // Implementation using getCategoryBySlug sequentially
-  // Note: This logic was local previously.
   if (!slugs.length) return [];
   const path: WcCategory[] = [];
 
   try {
-    // Very naive implementation: fetch each slug
-    // API /products/categories?slug=X might return multiple if slug is not unique (unlikely for cats)
     for (const slug of slugs) {
       const cat = await getCategoryBySlug(slug);
       if (cat) path.push(cat);
@@ -198,7 +255,7 @@ export async function createOrder(items: { product_id: number; quantity: number 
       method: "POST",
       headers: getAuthHeader(),
       body: JSON.stringify({
-        payment_method: "bacs", // Default fallback, user changes on checkout page
+        payment_method: "bacs",
         payment_method_title: "Direct Bank Transfer",
         set_paid: false,
         status: "pending",
@@ -212,7 +269,6 @@ export async function createOrder(items: { product_id: number; quantity: number 
     }
 
     const data = await res.json();
-    // Return the payment URL key.
     return data.payment_url || null;
   } catch (err) {
     console.error("Order creation failed", err);

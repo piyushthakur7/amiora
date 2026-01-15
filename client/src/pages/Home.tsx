@@ -16,6 +16,10 @@ import type { Product } from "@/types/Product";
 
 import { CategoryRail } from "@/components/CategoryRail";
 
+import { ServiceFeatures } from "@/components/ServiceFeatures";
+import { CircularCategories } from "@/components/CircularCategories";
+import { FAQSection } from "@/components/FAQSection";
+
 export default function Home() {
   useEffect(() => {
     document.title =
@@ -38,20 +42,8 @@ export default function Home() {
 
       <Hero />
 
-      {/* BRAND NARRATIVE */}
-      <section className="py-20 text-center bg-transparent">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <SectionDivider variant="ornate" className="mb-8" />
-          <h2 className="font-serif text-3xl md:text-5xl text-primary mb-6">
-            Timeless Elegance, Crafted for You
-          </h2>
-          <p className="font-serif text-lg md:text-xl text-muted-foreground leading-relaxed italic">
-            "We believe that jewelry is more than just an accessory. It is a reflection of your unique journey, a celebration of your most cherished moments, and an heirloom to be passed down through generations."
-          </p>
-          <SectionDivider className="mt-8" />
-        </div>
-      </section>
-
+      <ServiceFeatures />
+      <CircularCategories />
       <CategoryGrid />
 
       <SectionDivider variant="ornate" />
@@ -92,7 +84,7 @@ export default function Home() {
       </section>
 
       {/* FEATURE BANNER */}
-      <section className="py-24 bg-secondary/30 relative overflow-hidden my-12 border-y border-gold/10">
+      <section className="py-24 bg-secondary relative overflow-hidden my-12 border-y border-white/50">
         <div className="absolute inset-0 bg-primary/5 pattern-grid-lg opacity-10" />
         <div className="container mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1 relative">
@@ -159,6 +151,7 @@ export default function Home() {
         </div>
       </section>
 
+      <FAQSection />
       <TrustBadges />
       <Testimonials />
       <InstagramFeed />

@@ -20,6 +20,7 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuTrigger,
+  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
 import { CartDrawer } from "@/components/CartDrawer";
@@ -29,7 +30,7 @@ import { useWishlist } from "@/lib/wishlist-store";
 import { useQuery } from "@tanstack/react-query";
 import { getCategories, type WcCategory } from "@/lib/woocommerce";
 
-import { cn } from "@/lib/utils"; // Assuming you have a standard cn utility
+import { cn } from "@/lib/utils";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -55,7 +56,7 @@ export function Header() {
   const navTree = useMemo(() => {
     const parents = allCategories
       .filter(c => c.parent === 0 && c.slug !== "uncategorized")
-      .sort((a, b) => a.name.localeCompare(b.name)); // Optional: Sort alphabetically or by menu_order if available
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     return parents.map(parent => ({
       ...parent,
@@ -76,8 +77,16 @@ export function Header() {
     }
   };
 
+  const [location] = useLocation();
+  const isHome = location === "/";
+
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-[#EDE1CB] via-[#F5EBD8] to-[#EDE1CB] shadow-[0_2px_15px_rgba(0,0,0,0.12)] font-['Playfair Display',serif]">
+    <header
+      className={cn(
+        "w-full z-50 font-['Playfair Display',serif] transition-all duration-300",
+        isHome ? "absolute top-0 bg-transparent" : "sticky top-0 bg-[#0E2220] shadow-xl"
+      )}
+    >
       <div className="container mx-auto">
 
         {/* TOP BAR */}
@@ -88,7 +97,7 @@ export function Header() {
 
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon" className="p-2 rounded-xl bg-white border border-[#d9c7a3] shadow-sm hover:shadow-md transition text-[#b59863]">
+                <Button variant="ghost" size="icon" className="p-2 rounded-xl bg-white/10 border border-white/20 shadow-sm hover:bg-white/20 transition text-white">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
@@ -137,7 +146,7 @@ export function Header() {
               <img
                 src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
                 alt="Amiora Diamonds"
-                className="h-16 object-contain drop-shadow-sm hover:drop-shadow-lg transition-transform duration-300 hover:scale-110"
+                className="h-20 object-contain drop-shadow-md hover:drop-shadow-xl transition-all duration-300 hover:scale-105"
               />
             </Link>
           </div>
@@ -148,13 +157,13 @@ export function Header() {
               <Input
                 type="search"
                 placeholder="Search for Diamond Jewellery & More…"
-                className="pl-12 pr-4 py-3 rounded-full border border-[#e4d7b8] bg-white/90 shadow-inner focus:ring-2 focus:ring-[#d5b98a] focus:border-[#d5b98a] text-[#2a2a2a] placeholder:text-[#b8a98a] transition"
+                className="pl-12 pr-4 py-3 rounded-full border border-white/20 bg-white/10 backdrop-blur-md shadow-sm focus:ring-2 focus:ring-[#C8A46A]/50 focus:border-[#C8A46A]/50 text-white placeholder:text-white/60 transition"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
               <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#b8a98a] cursor-pointer hover:text-primary transition"
+                className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70 cursor-pointer hover:text-white transition"
                 onClick={() => handleSearch()}
               />
             </div>
@@ -162,12 +171,12 @@ export function Header() {
 
           {/* ICONS */}
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="md:hidden text-[#b59863]" onClick={() => setLocation("/shop")}>
+            <Button variant="ghost" size="icon" className="md:hidden text-white" onClick={() => setLocation("/shop")}>
               <Search className="h-6 w-6" />
             </Button>
 
             <Link href="/wishlist">
-              <Button variant="ghost" size="icon" className="relative hover:scale-110 transition duration-200 text-[#b59863]">
+              <Button variant="ghost" size="icon" className="relative hover:scale-110 transition duration-200 text-white">
                 <Heart className="h-6 w-6" />
                 {wishlistCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 bg-red-600 text-white flex items-center justify-center text-xs p-0 shadow-md">
@@ -181,7 +190,7 @@ export function Header() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hover:scale-110 transition duration-200 text-[#b59863]">
+                  <Button variant="ghost" size="icon" className="hover:scale-110 transition duration-200 text-white">
                     <UserCircle className="h-6 w-6" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -199,7 +208,7 @@ export function Header() {
               </DropdownMenu>
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="icon" className="hover:scale-110 transition duration-200 text-[#b59863]">
+                <Button variant="ghost" size="icon" className="hover:scale-110 transition duration-200 text-white">
                   <User className="h-6 w-6" />
                 </Button>
               </Link>
@@ -208,7 +217,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative hover:scale-110 transition duration-200 text-[#b59863]"
+              className="relative hover:scale-110 transition duration-200 text-white"
               onClick={() => setIsCartOpen(true)}
             >
               <ShoppingCart className="h-6 w-6" />
@@ -224,7 +233,7 @@ export function Header() {
         <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
 
         {/* DESKTOP NAV */}
-        <nav className="hidden lg:flex justify-center items-center border-t border-transparent bg-[#003C32] px-6 shadow-md min-h-[48px]">
+        <nav className="hidden lg:flex justify-center items-center border-t border-white/10 bg-black/20 backdrop-blur-sm px-6 shadow-md min-h-[48px]">
           <NavigationMenu className="mx-auto">
             <NavigationMenuList className="gap-2 flex-wrap justify-center">
 
@@ -239,12 +248,12 @@ export function Header() {
                     </Link>
                   </NavigationMenuTrigger>
 
-                  <NavigationMenuContent className="bg-white shadow-xl rounded-xl border border-gray-100">
-                    <div className="flex flex-col gap-2 p-5 w-[260px]">
+                  <NavigationMenuContent className="bg-[#003C32] shadow-xl rounded-b-xl border-x border-b border-[#C8A46A]/20 -mt-1">
+                    <div className="flex flex-row p-6 w-[90vw] max-w-7xl gap-8 min-h-[350px] justify-center">
 
                       {/* VIEW ALL */}
                       <Link href={`/${category.slug}`}>
-                        <span className="font-semibold text-[#003C32] hover:text-[#C8A46A] block mb-2 pb-2 border-b border-gray-100">
+                        <span className="font-serif text-2xl text-white hover:text-[#C8A46A] block mb-4 pb-2 border-b border-white/10">
                           View all {category.name}
                         </span>
                       </Link>
@@ -254,7 +263,7 @@ export function Header() {
                         <div className="flex flex-col gap-1 text-sm max-h-[300px] overflow-y-auto">
                           {category.children.map(sub => (
                             <Link key={sub.id} href={`/${category.slug}/${sub.slug}`}>
-                              <span className="cursor-pointer text-[#003C32] hover:text-[#C8A46A] py-1 block">
+                              <span className="cursor-pointer text-white/80 hover:text-[#C8A46A] py-1 block text-lg transition-colors">
                                 {sub.name}
                               </span>
                             </Link>
@@ -278,6 +287,7 @@ export function Header() {
 
             </NavigationMenuList>
 
+            <NavigationMenuViewport />
           </NavigationMenu>
         </nav>
 
