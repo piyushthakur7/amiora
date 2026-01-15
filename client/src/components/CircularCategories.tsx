@@ -36,7 +36,7 @@ const categories = [
 
 export function CircularCategories() {
     return (
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-background">
             <div className="container mx-auto px-4">
                 <h2 className="text-[#3A6B65] text-2xl md:text-3xl font-sans mb-10 text-left font-normal pl-4">
                     Your favorites, by category.

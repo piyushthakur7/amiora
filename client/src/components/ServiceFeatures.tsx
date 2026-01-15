@@ -31,7 +31,7 @@ const features = [
 
 export function ServiceFeatures() {
     return (
-        <section className="py-8 bg-white border-b border-gray-100">
+        <section className="py-8 bg-background border-b border-[#C8A46A]/20">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center divide-x-0 md:divide-x divide-[#E6D1A3]/50">
                     {features.map((feature, index) => (

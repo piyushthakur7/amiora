@@ -15,30 +15,33 @@
   --elevate-2: rgba(0, 0, 0, .08);
 
   /* BRAND PALETTE - ETHERA INSPIRED */
-  
+
   /* Deep Emerald - Richer, darker for contrast */
-  --primary: 168 55% 18%; 
+  --primary: 168 55% 18%;
   --primary-foreground: 40 30% 98%;
 
   /* Soft Ivory/Cream Background */
-  --background: 40 20% 98%;
-  --foreground: 168 55% 18%; /* Text is deep emerald for elegance, not black */
+  --background: 40 30% 96%;
+  --foreground: 168 55% 18%;
+  /* Text is deep emerald for elegance, not black */
 
   /* Metallic Gold */
   --gold: 42 45% 60%;
   --gold-light: 42 45% 85%;
-  --accent: 42 50% 55%; /* Gold accent */
+  --accent: 42 50% 55%;
+  /* Gold accent */
   --accent-foreground: 40 30% 98%;
 
   /* UI Elements */
-  --card: 0 0% 100%;
+  --card: 40 30% 96%;
   --card-foreground: 168 55% 18%;
   --card-border: 40 15% 92%;
-  
-  --popover: 0 0% 100%;
+
+  --popover: 40 30% 96%;
   --popover-foreground: 168 55% 18%;
-  
-  --secondary: 40 30% 96%; /* Very light cream */
+
+  --secondary: 40 30% 96%;
+  /* Very light cream */
   --secondary-foreground: 168 55% 18%;
 
   --muted: 40 10% 94%;
@@ -51,20 +54,21 @@
   --border: 40 15% 90%;
   --ring: 168 55% 18%;
 
-  --radius: 0rem; /* Sharp luxury corners */
+  --radius: 0rem;
+  /* Sharp luxury corners */
 
   --font-sans: 'Lato', sans-serif;
   --font-serif: 'Playfair Display', serif;
 
   /* Shadows */
-  --shadow-2xs: 0px 1px 1px rgba(0,0,0,0.05);
-  --shadow-xs: 0px 2px 4px rgba(0,0,0,0.05);
-  --shadow-sm: 0px 4px 6px rgba(0,0,0,0.05);
-  --shadow: 0px 8px 12px rgba(0,0,0,0.05);
-  --shadow-md: 0px 12px 24px rgba(0,0,0,0.08);
-  --shadow-lg: 0px 20px 30px rgba(0,0,0,0.10);
-  --shadow-xl: 0px 30px 50px rgba(0,0,0,0.12);
-  --shadow-2xl: 0px 50px 80px rgba(0,0,0,0.15);
+  --shadow-2xs: 0px 1px 1px rgba(0, 0, 0, 0.05);
+  --shadow-xs: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0px 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow: 0px 8px 12px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0px 12px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0px 20px 30px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0px 30px 50px rgba(0, 0, 0, 0.12);
+  --shadow-2xl: 0px 50px 80px rgba(0, 0, 0, 0.15);
 
   --tracking-normal: 0em;
   --spacing: 0.25rem;
@@ -80,31 +84,33 @@
 
 .dark {
   /* Dark mode is inverse - Deep Emerald Background */
-  --background: 168 55% 12%; 
-  --foreground: 40 20% 95%; /* Ivory text */
-  
+  --background: 168 55% 12%;
+  --foreground: 40 20% 95%;
+  /* Ivory text */
+
   --card: 168 55% 14%;
   --card-foreground: 40 20% 95%;
   --card-border: 168 50% 20%;
-  
+
   --popover: 168 55% 14%;
   --popover-foreground: 40 20% 95%;
 
-  --primary: 40 40% 60%; /* Gold becomes primary in dark mode */
+  --primary: 40 40% 60%;
+  /* Gold becomes primary in dark mode */
   --primary-foreground: 168 55% 12%;
 
   --secondary: 168 50% 16%;
   --secondary-foreground: 40 20% 90%;
-  
+
   --muted: 168 40% 20%;
   --muted-foreground: 168 20% 60%;
-  
+
   --accent: 40 40% 60%;
   --accent-foreground: 168 55% 12%;
-  
+
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 98%;
-  
+
   --border: 168 40% 20%;
   --input: 168 40% 20%;
   --ring: 40 40% 60%;
@@ -117,7 +123,8 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    background-image: none; /* Removed busy gradient for cleaner look */
+    background-image: none;
+    /* Removed busy gradient for cleaner look */
     background-color: hsl(var(--background));
   }
 }

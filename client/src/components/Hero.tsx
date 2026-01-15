@@ -24,7 +24,7 @@ export function Hero() {
       {/* Content Overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-4">
 
-        <h1 className="font-serif text-5xl md:text-7xl lg:text-9xl text-white mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] opacity-0 animate-fade-in-up transition-all duration-1000 delay-300 tracking-tight">
+        <h1 className="font-serif text-5xl md:text-7xl lg:text-9xl text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-[#E6D1A3] mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] opacity-0 animate-fade-in-up transition-all duration-1000 delay-300 tracking-tight">
           Where Craft <br className="md:hidden" /> Meets Forever
         </h1>
 
@@ -43,8 +43,8 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Soft dark bottom fade to blend with next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0E2220] via-[#0E2220]/60 to-transparent" />
+      {/* Soft dark bottom fade to blend with next section (Ivory Background) */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
     </section>
   );

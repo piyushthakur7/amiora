@@ -103,7 +103,7 @@ export function Footer() {
         </div>
       </footer>
 
-      <div className="bg-white py-12 border-t border-gray-100 text-sm font-sans">
+      <div className="bg-background py-12 border-t border-[#C8A46A]/20 text-sm font-sans">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 space-y-8">
 
           {/* GOLD SEO */}

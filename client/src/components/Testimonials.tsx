@@ -62,7 +62,7 @@ export function Testimonials() {
             {reviews.map((review, index) => (
               <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2 h-full">
-                  <Card className="bg-white border border-[#C8A46A]/20 shadow-sm hover:shadow-xl hover:shadow-[#C8A46A]/10 transition-all duration-500 h-full group">
+                  <Card className="bg-card border border-[#C8A46A]/20 shadow-sm hover:shadow-xl hover:shadow-[#C8A46A]/10 transition-all duration-500 h-full group">
                     <CardContent className="flex flex-col p-8 h-full justify-between gap-6 relative">
 
                       {/* Decorative Quote Mark */}

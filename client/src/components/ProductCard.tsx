@@ -57,7 +57,7 @@ export function ProductCard({ product }: { product: any }) {
               <Button
                 variant="default"
                 size="lg"
-                className="flex-1 bg-white text-primary hover:bg-primary hover:text-white border-0 shadow-lg font-serif tracking-wide"
+                className="flex-1 bg-card text-primary hover:bg-primary hover:text-white border-0 shadow-lg font-serif tracking-wide"
                 onClick={handleAddToCart}
               >
                 Add to Bag
