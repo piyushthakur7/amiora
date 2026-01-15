@@ -2,13 +2,12 @@ import { Instagram, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function InstagramFeed() {
-  // Using public stock video URLs for demo purposes since we don't have the specific local videos yet.
-  // These simulate the "Reel" look - tall aspect ratio, looping, no controls.
-  const videos = [
-    "https://videos.pexels.com/video-files/5354512/5354512-hd_1080_1920_25fps.mp4", // Jewelry box handling
-    "https://videos.pexels.com/video-files/3882963/3882963-hd_1080_1920_30fps.mp4", // Woman wearing ring
-    "https://videos.pexels.com/video-files/6917684/6917684-hd_1080_1920_25fps.mp4", // Necklace closeup
-    "https://videos.pexels.com/video-files/4058142/4058142-hd_1080_1920_30fps.mp4"  // Earrings
+  // Using local production images for the feed.
+  const images = [
+    "/images/p1.jpg",
+    "/images/p2.jpg",
+    "/images/p3.jpg",
+    "/images/p1.jpg"
   ];
 
   return (
@@ -24,15 +23,12 @@ export function InstagramFeed() {
 
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {videos.map((src, i) => (
+          {images.map((src, i) => (
             <div key={i} className="relative aspect-[9/16] w-full rounded-xl overflow-hidden shadow-lg border border-[#e4d7b8] group">
-              <video
+              <img
                 src={src}
-                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
-                autoPlay
-                loop
-                muted
-                playsInline
+                alt="Amiora Journey"
+                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 hover:scale-105"
               />
               {/* Optional overlay to make it look clickable/interactive */}
               <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />

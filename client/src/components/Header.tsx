@@ -83,7 +83,7 @@ export function Header() {
       <div className="container mx-auto">
 
         {/* TOP BAR Grid Layout for Perfect Centering */}
-        <div className="grid grid-cols-3 items-center h-28 px-4 md:px-6 lg:px-10">
+        <div className="grid grid-cols-3 items-center py-4 px-4 md:px-6 lg:px-10">
 
           {/* LEFT: Mobile Nav + Category Toggle */}
           <div className="flex items-center justify-start gap-4 md:gap-8">
@@ -94,7 +94,7 @@ export function Header() {
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
               className="hidden lg:flex items-center gap-2 text-white hover:text-[#C8A46A] transition-colors group"
             >
-              <span className="text-xl tracking-widest uppercase font-light">Categories</span>
+              <span className="text-sm md:text-base tracking-widest uppercase font-light">Categories</span>
               <div className={cn("transition-transform duration-300", isCategoryOpen ? "rotate-180" : "rotate-0")}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-70 group-hover:opacity-100">
                   <path d="m6 9 6 6 6-6" />
@@ -109,7 +109,7 @@ export function Header() {
               <img
                 src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
                 alt="Amiora Diamonds"
-                className="h-24 md:h-32 object-contain drop-shadow-[0_0_25px_rgba(200,164,106,0.5)] hover:drop-shadow-[0_0_25px_rgba(200,164,106,0.6)] transition-all duration-300 hover:scale-105"
+                className="h-16 md:h-24 object-contain drop-shadow-[0_0_25px_rgba(200,164,106,0.5)] hover:drop-shadow-[0_0_25px_rgba(200,164,106,0.6)] transition-all duration-300 hover:scale-105"
               />
             </Link>
           </div>
