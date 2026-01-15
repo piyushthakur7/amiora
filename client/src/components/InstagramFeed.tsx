@@ -1,13 +1,14 @@
-import { Instagram } from "lucide-react";
+import { Instagram, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function InstagramFeed() {
-  // Mock Instagram images
-  const shots = [
-    "/images/insta-1.jpg",
-    "/images/insta-2.jpg",
-    "/images/insta-3.jpg",
-    "/images/insta-4.jpg",
+  // Using public stock video URLs for demo purposes since we don't have the specific local videos yet.
+  // These simulate the "Reel" look - tall aspect ratio, looping, no controls.
+  const videos = [
+    "https://videos.pexels.com/video-files/5354512/5354512-hd_1080_1920_25fps.mp4", // Jewelry box handling
+    "https://videos.pexels.com/video-files/3882963/3882963-hd_1080_1920_30fps.mp4", // Woman wearing ring
+    "https://videos.pexels.com/video-files/6917684/6917684-hd_1080_1920_25fps.mp4", // Necklace closeup
+    "https://videos.pexels.com/video-files/4058142/4058142-hd_1080_1920_30fps.mp4"  // Earrings
   ];
 
   return (
@@ -22,22 +23,19 @@ export function InstagramFeed() {
       </div>
 
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            "https://www.instagram.com/reel/DS9FCC7E3cK/embed",
-            "https://www.instagram.com/reel/DSwnnKSkSu9/embed",
-            "https://www.instagram.com/reel/DSwVtBSAVaC/embed",
-            "https://www.instagram.com/reel/DSrJp5oE2zy/embed"
-          ].map((url, i) => (
-            <div key={i} className="aspect-[9/16] w-full rounded-xl overflow-hidden shadow-lg border border-[#e4d7b8]">
-              <iframe
-                src={url}
-                className="w-full h-full object-cover"
-                frameBorder="0"
-                allowFullScreen
-                scrolling="no"
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-              ></iframe>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {videos.map((src, i) => (
+            <div key={i} className="relative aspect-[9/16] w-full rounded-xl overflow-hidden shadow-lg border border-[#e4d7b8] group">
+              <video
+                src={src}
+                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+              {/* Optional overlay to make it look clickable/interactive */}
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
             </div>
           ))}
         </div>
@@ -45,9 +43,11 @@ export function InstagramFeed() {
 
       <div className="text-center mt-12">
         <Button variant="outline" className="border-[#003C32] text-[#003C32] hover:bg-[#003C32] hover:text-white px-8 py-6 h-auto text-lg font-serif rounded-none tracking-wide">
-          View Gallery
+          <Instagram className="mr-2 h-5 w-5" />
+          Follow on Instagram
         </Button>
       </div>
     </section>
   );
 }
+

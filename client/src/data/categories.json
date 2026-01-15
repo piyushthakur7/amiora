@@ -1,97 +1,221 @@
 {
   "rings": {
     "name": "Rings",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-162-scaled.jpg",
+    "image": "/images/p1.jpg",
     "subcategories": [
-      { "slug": "daily-wear", "name": "Daily Wear", "tag": "daily-wear" },
-      { "slug": "solitaire", "name": "Solitaire", "tag": "solitaire" },
-      { "slug": "bands", "name": "Bands", "tag": "band" },
-      { "slug": "cocktail", "name": "Cocktail", "tag": "cocktail" }
+      {
+        "slug": "daily-wear",
+        "name": "Daily Wear",
+        "tag": "daily-wear"
+      },
+      {
+        "slug": "solitaire",
+        "name": "Solitaire",
+        "tag": "solitaire"
+      },
+      {
+        "slug": "bands",
+        "name": "Bands",
+        "tag": "band"
+      },
+      {
+        "slug": "cocktail",
+        "name": "Cocktail",
+        "tag": "cocktail"
+      }
     ]
   },
-
   "earrings": {
     "name": "Earrings",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-292-scaled.jpg",
+    "image": "/images/p3.jpg",
     "subcategories": [
-      { "slug": "studs", "name": "Studs", "tag": "stud" },
-      { "slug": "hoops", "name": "Hoops", "tag": "hoop" },
-      { "slug": "drops", "name": "Drop / Jhumka", "tag": "drop" }
+      {
+        "slug": "studs",
+        "name": "Studs",
+        "tag": "stud"
+      },
+      {
+        "slug": "hoops",
+        "name": "Hoops",
+        "tag": "hoop"
+      },
+      {
+        "slug": "drops",
+        "name": "Drop / Jhumka",
+        "tag": "drop"
+      }
     ]
   },
-
   "pendant-locket": {
     "name": "Pendant / Locket",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-105-scaled.jpg",
+    "image": "/images/p2.jpg",
     "subcategories": [
-      { "slug": "daily-wear", "name": "Daily Wear", "tag": "daily-wear" },
-      { "slug": "solitaire", "name": "Solitaire", "tag": "solitaire" },
-      { "slug": "cluster", "name": "Cluster", "tag": "cluster" },
-      { "slug": "alphabet", "name": "Alphabet", "tag": "alphabet" }
+      {
+        "slug": "daily-wear",
+        "name": "Daily Wear",
+        "tag": "daily-wear"
+      },
+      {
+        "slug": "solitaire",
+        "name": "Solitaire",
+        "tag": "solitaire"
+      },
+      {
+        "slug": "cluster",
+        "name": "Cluster",
+        "tag": "cluster"
+      },
+      {
+        "slug": "alphabet",
+        "name": "Alphabet",
+        "tag": "alphabet"
+      }
     ]
   },
-
   "bangles-bracelets": {
     "name": "Bangles / Bracelets",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-16-scaled.jpg",
+    "image": "/images/p1.jpg",
     "subcategories": [
-      { "slug": "chain", "name": "Chain Bracelet", "tag": "chain" },
-      { "slug": "adjustable", "name": "Adjustable Bracelet", "tag": "adjustable" },
-      { "slug": "tennis", "name": "Tennis Bracelet", "tag": "tennis" },
-      { "slug": "bangles", "name": "Bangles", "tag": "bangle" }
+      {
+        "slug": "chain",
+        "name": "Chain Bracelet",
+        "tag": "chain"
+      },
+      {
+        "slug": "adjustable",
+        "name": "Adjustable Bracelet",
+        "tag": "adjustable"
+      },
+      {
+        "slug": "tennis",
+        "name": "Tennis Bracelet",
+        "tag": "tennis"
+      },
+      {
+        "slug": "bangles",
+        "name": "Bangles",
+        "tag": "bangle"
+      }
     ]
   },
-
   "mangal-sutra": {
     "name": "Mangal-Sutra",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-225-scaled.jpg",
+    "image": "/images/p2.jpg",
     "subcategories": [
-      { "slug": "pendant-chain", "name": "Pendant Chain", "tag": "mangal-sutra" },
-      { "slug": "bracelet", "name": "Bracelet", "tag": "mangal-bracelet" },
-      { "slug": "solitaire", "name": "Solitaire", "tag": "solitaire" }
+      {
+        "slug": "pendant-chain",
+        "name": "Pendant Chain",
+        "tag": "mangal-sutra"
+      },
+      {
+        "slug": "bracelet",
+        "name": "Bracelet",
+        "tag": "mangal-bracelet"
+      },
+      {
+        "slug": "solitaire",
+        "name": "Solitaire",
+        "tag": "solitaire"
+      }
     ]
   },
-
   "necklaces": {
     "name": "Necklaces",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-75-scaled.jpg",
+    "image": "/images/p2.jpg",
     "subcategories": [
-      { "slug": "daily-wear", "name": "Daily Wear", "tag": "daily" },
-      { "slug": "solitaire", "name": "Solitaire", "tag": "solitaire" },
-      { "slug": "bridal", "name": "Bridal", "tag": "bridal" },
-      { "slug": "choker", "name": "Choker", "tag": "choker" }
+      {
+        "slug": "daily-wear",
+        "name": "Daily Wear",
+        "tag": "daily"
+      },
+      {
+        "slug": "solitaire",
+        "name": "Solitaire",
+        "tag": "solitaire"
+      },
+      {
+        "slug": "bridal",
+        "name": "Bridal",
+        "tag": "bridal"
+      },
+      {
+        "slug": "choker",
+        "name": "Choker",
+        "tag": "choker"
+      }
     ]
   },
-
   "nosepin": {
     "name": "Nosepin",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-185-scaled.jpg",
+    "image": "/images/p3.jpg",
     "subcategories": [
-      { "slug": "solitaire", "name": "Solitaire", "tag": "solitaire" },
-      { "slug": "designer", "name": "Designer", "tag": "designer" },
-      { "slug": "rings", "name": "Rings", "tag": "ring" },
-      { "slug": "nath", "name": "Nath", "tag": "nath" }
+      {
+        "slug": "solitaire",
+        "name": "Solitaire",
+        "tag": "solitaire"
+      },
+      {
+        "slug": "designer",
+        "name": "Designer",
+        "tag": "designer"
+      },
+      {
+        "slug": "rings",
+        "name": "Rings",
+        "tag": "ring"
+      },
+      {
+        "slug": "nath",
+        "name": "Nath",
+        "tag": "nath"
+      }
     ]
   },
-
   "mens-collection": {
     "name": "Men's Collection",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-171-scaled.jpg",
+    "image": "/images/p1.jpg",
     "subcategories": [
-      { "slug": "rings", "name": "Rings", "tag": "ring" },
-      { "slug": "studs", "name": "Studs", "tag": "stud" },
-      { "slug": "bracelet", "name": "Bracelet", "tag": "bracelet" }
+      {
+        "slug": "rings",
+        "name": "Rings",
+        "tag": "ring"
+      },
+      {
+        "slug": "studs",
+        "name": "Studs",
+        "tag": "stud"
+      },
+      {
+        "slug": "bracelet",
+        "name": "Bracelet",
+        "tag": "bracelet"
+      }
     ]
   },
-
   "kids-collection": {
     "name": "Kids Collection",
-    "image": "https://darkgray-rail-803191.hostingersite.com/wp-content/uploads/2025/11/ADJUSTABLE-AND-CHAIN-Brecelet-merged-images-180-scaled.jpg",
+    "image": "/images/p3.jpg",
     "subcategories": [
-      { "slug": "rings", "name": "Rings", "tag": "ring" },
-      { "slug": "bracelet", "name": "Bracelet / Bangles", "tag": "bracelet" },
-      { "slug": "pendants", "name": "Pendants", "tag": "pendant" },
-      { "slug": "earrings", "name": "Earrings", "tag": "earring" }
+      {
+        "slug": "rings",
+        "name": "Rings",
+        "tag": "ring"
+      },
+      {
+        "slug": "bracelet",
+        "name": "Bracelet / Bangles",
+        "tag": "bracelet"
+      },
+      {
+        "slug": "pendants",
+        "name": "Pendants",
+        "tag": "pendant"
+      },
+      {
+        "slug": "earrings",
+        "name": "Earrings",
+        "tag": "earring"
+      }
     ]
   }
 }

@@ -47,7 +47,7 @@ const DUMMY_PRODUCTS: Product[] = [
     regularPrice: "50000",
     onSale: true,
     images: [
-      { src: "https://images.unsplash.com/photo-1605100804763-ebea24ea3391?auto=format&fit=crop&q=80&w=800", alt: "Diamond Ring" }
+      { src: "/images/p1.jpg", alt: "Diamond Ring" }
     ],
     description: "A stunning piece of jewelry crafted with precision.",
     shortDescription: "Elegant and timeless.",
@@ -62,7 +62,7 @@ const DUMMY_PRODUCTS: Product[] = [
     regularPrice: "15000",
     onSale: false,
     images: [
-      { src: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?auto=format&fit=crop&q=80&w=800", alt: "Necklace" }
+      { src: "/images/p2.jpg", alt: "Necklace" }
     ],
     description: "Beautiful gold plated necklace.",
     shortDescription: "Perfect for daily wear.",
@@ -75,7 +75,7 @@ const DUMMY_PRODUCTS: Product[] = [
     slug: "elegant-drop-earrings",
     price: "25000",
     images: [
-      { src: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800", alt: "Earrings" }
+      { src: "/images/p3.jpg", alt: "Earrings" }
     ],
     description: "Sophisticated drop earrings.",
     shortDescription: "Add a touch of class.",
@@ -105,14 +105,17 @@ const getLocalCategories = (): WcCategory[] => {
     // Children
     if (data.subcategories) {
       data.subcategories.forEach((sub: any, idx: number) => {
+        // Cycle through dummy images for subcategories
+        const imgIndex = (idx % 3) + 1;
+        const imgSrc = `/images/p${imgIndex}.jpg`;
+
         cats.push({
           id: parentId * 100 + idx,
           name: sub.name,
           slug: sub.slug,
           parent: parentId,
           description: sub.name,
-          // Use parent image or placeholder if specific image missing, or rotate dummy images
-          image: { src: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=500" }
+          image: { src: imgSrc }
         });
       });
     }

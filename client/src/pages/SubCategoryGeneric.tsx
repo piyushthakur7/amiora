@@ -7,6 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Product } from "@/types/Product";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "wouter";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Filter } from "lucide-react";
 
 interface SubCategoryPageProps {
     parentSlug: string;
@@ -18,6 +21,7 @@ export default function SubCategoryGeneric({ parentSlug, childSlug, title }: Sub
     // State for filters
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
     const [isPriceInitialized, setIsPriceInitialized] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Fetch products for THIS subcategory
     const { data: products, isLoading: isProductsLoading } = useQuery<Product[]>({
@@ -86,6 +90,8 @@ export default function SubCategoryGeneric({ parentSlug, childSlug, title }: Sub
 
     return (
         <div className="container mx-auto px-4 py-8 md:py-12">
+
+            {/* Breadcrumb - Hidden on very small screens if strict space, but usually fine */}
             <div className="mb-6 md:mb-10">
                 <nav className="text-sm text-muted-foreground mb-4">
                     <Link href="/">Home</Link>
@@ -97,7 +103,35 @@ export default function SubCategoryGeneric({ parentSlug, childSlug, title }: Sub
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-                <aside className="w-full lg:w-64 flex-shrink-0">
+
+                {/* MOBILE FILTER TOGGLE */}
+                <div className="lg:hidden w-full flex justify-between items-center mb-4">
+                    <h1 className="text-2xl font-serif text-primary capitalize">
+                        {title}
+                    </h1>
+                    <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                        <SheetTrigger asChild>
+                            <Button variant="outline" className="flex items-center gap-2 border-primary/20 bg-background text-foreground">
+                                <Filter className="h-4 w-4" />
+                                Filters
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="overflow-y-auto w-[300px] sm:w-[400px]">
+                            <SheetTitle className="font-serif text-2xl mb-6">Filters</SheetTitle>
+                            <SidebarFilter
+                                categories={sidebarCategories}
+                                minPrice={minPrice}
+                                maxPrice={maxPrice}
+                                priceRange={priceRange}
+                                onPriceChange={setPriceRange}
+                                onFilterApply={() => setIsFilterOpen(false)}
+                            />
+                        </SheetContent>
+                    </Sheet>
+                </div>
+
+                {/* DESKTOP SIDEBAR */}
+                <aside className="hidden lg:block w-full lg:w-64 flex-shrink-0">
                     <SidebarFilter
                         categories={sidebarCategories}
                         minPrice={minPrice}
@@ -108,9 +142,10 @@ export default function SubCategoryGeneric({ parentSlug, childSlug, title }: Sub
                 </aside>
 
                 <div className="flex-1">
-                    <div className="flex justify-between items-center mb-6">
+                    {/* Desktop Header for Category */}
+                    <div className="hidden lg:flex justify-between items-center mb-6">
                         <div>
-                            <h1 className="text-2xl font-serif text-primary text-left bg-transparent p-0 mb-1 capitalize">
+                            <h1 className="text-3xl font-serif text-primary text-left bg-transparent p-0 mb-1 capitalize">
                                 {title}
                             </h1>
                             <p className="text-sm text-muted-foreground capitalize">
@@ -122,11 +157,16 @@ export default function SubCategoryGeneric({ parentSlug, childSlug, title }: Sub
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Mobile Result Count (below header) */}
+                    <div className="lg:hidden text-sm text-muted-foreground mb-4">
+                        {filteredProducts.length} Products Found
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                         {isLoading ? (
                             Array.from({ length: 6 }).map((_, i) => (
                                 <div key={i} className="space-y-4">
-                                    <Skeleton className="aspect-square w-full rounded-md" />
+                                    <Skeleton className="aspect-[3/4] w-full rounded-md" />
                                     <Skeleton className="h-4 w-3/4" />
                                     <Skeleton className="h-4 w-1/2" />
                                 </div>
@@ -139,7 +179,7 @@ export default function SubCategoryGeneric({ parentSlug, childSlug, title }: Sub
                             <div className="col-span-full text-center py-20 bg-secondary/10 rounded-xl">
                                 <h3 className="text-xl font-medium mb-2">No products found</h3>
                                 <p className="text-muted-foreground">
-                                    We couldn't find any items explicitly tagged "{title}" in {parentSlug} within this price range.
+                                    We couldn't find any items in this price range.
                                 </p>
                                 <button
                                     onClick={() => setPriceRange([minPrice, maxPrice])}
@@ -155,3 +195,4 @@ export default function SubCategoryGeneric({ parentSlug, childSlug, title }: Sub
         </div>
     );
 }
+
