@@ -5,6 +5,7 @@ export interface Product {
   price: string;
   regularPrice?: string;
   onSale?: boolean;
+  stockStatus?: string;
   images: {
     src: string;
     alt?: string;

@@ -1,9 +1,33 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
-import categoriesData from "@/data/categories.json";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories, type WcCategory } from "@/lib/woocommerce";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function CategoryGrid() {
-  const entries = Object.entries(categoriesData);
+  const { data: categories = [], isLoading } = useQuery<WcCategory[]>({
+    queryKey: ["component-category-grid"],
+    queryFn: () => getCategories(),
+  });
+
+  // Filter only parent categories (parent === 0)
+  const parentCategories = categories.filter(c => c.parent === 0);
+
+  if (isLoading) {
+    return (
+      <section className="py-20 md:py-32 bg-background">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <h2 className="font-serif text-4xl md:text-5xl font-medium text-center mb-4 text-primary">
+            Collections
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-16">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-xl w-full" />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-20 md:py-32 bg-background">
@@ -17,15 +41,15 @@ export function CategoryGrid() {
 
         {/* Updated Grid: 5 columns on large screens for 'small and tidy' look */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {entries.map(([slug, cat]) => (
-            <Link key={slug} href={`/${slug}`}>
+          {parentCategories.map((cat) => (
+            <Link key={cat.slug} href={`/${cat.slug}`}>
               <div
                 className="relative group overflow-hidden cursor-pointer aspect-square rounded-xl shadow-sm hover:shadow-lg transition-all"
               >
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-500 z-10" />
 
                 <img
-                  src={cat.image}
+                  src={cat.image?.src || "/placeholder-image.jpg"}
                   alt={cat.name}
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   onError={(e) => {

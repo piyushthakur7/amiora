@@ -1,11 +1,10 @@
 import type { Product } from "@/types/Product";
-import categoriesData from "@/data/categories.json";
 
 /* -------------------------------------------------
    CONFIG
 ------------------------------------------------- */
 const WC_API_URL = "/api/wc";
-// Text placeholders to be replaced by the user with real keys
+// Keys should be in .env.local or .env
 const CONSUMER_KEY = import.meta.env.VITE_WC_CONSUMER_KEY || "";
 const CONSUMER_SECRET = import.meta.env.VITE_WC_CONSUMER_SECRET || "";
 
@@ -36,114 +35,60 @@ export interface WcCategory {
 }
 
 /* -------------------------------------------------
-   DUMMY DATA HELPERS
+   MAPPERS
 ------------------------------------------------- */
-const DUMMY_PRODUCTS: Product[] = [
-  {
-    id: 99999,
-    name: "Classic Diamond Solitaire Ring",
-    slug: "classic-diamond-solitaire-ring",
-    price: "45000",
-    regularPrice: "50000",
-    onSale: true,
-    images: [
-      { src: "/images/p1.jpg", alt: "Diamond Ring" }
-    ],
-    description: "A stunning piece of jewelry crafted with precision.",
-    shortDescription: "Elegant and timeless.",
-    sku: "DUMMY-001",
-    categories: [{ id: 101, name: "Rings", slug: "rings" }]
-  },
-  {
-    id: 99998,
-    name: "Gold Plated Necklace",
-    slug: "gold-necklace",
-    price: "12000",
-    regularPrice: "15000",
-    onSale: false,
-    images: [
-      { src: "/images/p2.jpg", alt: "Necklace" }
-    ],
-    description: "Beautiful gold plated necklace.",
-    shortDescription: "Perfect for daily wear.",
-    sku: "DUMMY-002",
-    categories: [{ id: 105, name: "Necklaces", slug: "necklaces" }]
-  },
-  {
-    id: 99997,
-    name: "Elegant Drop Earrings",
-    slug: "elegant-drop-earrings",
-    price: "25000",
-    images: [
-      { src: "/images/p3.jpg", alt: "Earrings" }
-    ],
-    description: "Sophisticated drop earrings.",
-    shortDescription: "Add a touch of class.",
-    sku: "DUMMY-003",
-    categories: [{ id: 102, name: "Earrings", slug: "earrings" }]
-  }
-];
-
-// Transform categories.json into a flat list of WcCategory
-const getLocalCategories = (): WcCategory[] => {
-  const cats: WcCategory[] = [];
-  let pIdCounter = 1000;
-
-  Object.entries(categoriesData).forEach(([slug, data]) => {
-    const parentId = pIdCounter++;
-
-    // Parent
-    cats.push({
-      id: parentId,
-      name: data.name,
-      slug: slug,
-      parent: 0,
-      description: data.name + " Collection",
-      image: { src: data.image || "" }
-    });
-
-    // Children
-    if (data.subcategories) {
-      data.subcategories.forEach((sub: any, idx: number) => {
-        // Cycle through dummy images for subcategories
-        const imgIndex = (idx % 3) + 1;
-        const imgSrc = `/images/p${imgIndex}.jpg`;
-
-        cats.push({
-          id: parentId * 100 + idx,
-          name: sub.name,
-          slug: sub.slug,
-          parent: parentId,
-          description: sub.name,
-          image: { src: imgSrc }
-        });
-      });
-    }
-  });
-
-  return cats;
-};
+function mapProduct(p: any): Product {
+  return {
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    regularPrice: p.regular_price,
+    onSale: p.on_sale,
+    images: p.images?.map((img: any) => ({
+      src: img.src,
+      alt: img.alt || p.name
+    })) || [],
+    description: p.description,
+    shortDescription: p.short_description,
+    sku: p.sku,
+    categories: p.categories?.map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug
+    })) || [],
+    attributes: p.attributes?.map((a: any) => ({
+      id: a.id,
+      name: a.name,
+      options: a.options
+    })) || []
+  };
+}
 
 /* -------------------------------------------------
    GET ALL PRODUCTS
 ------------------------------------------------- */
 export async function getProducts(params: Record<string, any> = {}): Promise<Product[]> {
-  // Always return dummy products
-  return DUMMY_PRODUCTS;
-
-  /* 
-  // REAL API IMPLEMENTATION (Preserved for future)
   const query = new URLSearchParams({
-    per_page: "50", 
+    per_page: "50",
     status: "publish",
     ...params,
   });
 
+  // If filtering by category slug (which assumes the internal logic passes slugs)
+  // WC API expects 'category' param to be ID, not slug. 
+  // If the caller passes 'category' as a slug, we need to resolve it to an ID.
   if (params.category && typeof params.category === "string" && isNaN(Number(params.category))) {
-    const cat = await getCategoryBySlug(params.category);
-    if (cat) {
-      query.set("category", cat.id.toString());
-    } else {
+    try {
+      const cat = await getCategoryBySlug(params.category);
+      if (cat) {
+        query.set("category", cat.id.toString());
+      } else {
+        // Category not found, return empty
+        return [];
+      }
+    } catch (e) {
+      console.error("Error resolving category slug:", e);
       return [];
     }
   }
@@ -158,27 +103,26 @@ export async function getProducts(params: Record<string, any> = {}): Promise<Pro
     }
 
     const data = await res.json();
-    return data as Product[];
+    if (!Array.isArray(data)) return [];
+
+    return data.map(mapProduct);
   } catch (err) {
     console.error("Failed to fetch products from WooCommerce", err);
     return [];
   }
-  */
 }
 
 /* -------------------------------------------------
    GET SINGLE PRODUCT
 ------------------------------------------------- */
 export async function getProduct(id: number): Promise<Product> {
-  const dummy = DUMMY_PRODUCTS.find(p => p.id === id);
-  if (dummy) return dummy;
-
   try {
     const res = await fetch(`${WC_API_URL}/products/${id}`, {
       headers: getAuthHeader(),
     });
     if (!res.ok) throw new Error("Product not found");
-    return await res.json();
+    const data = await res.json();
+    return mapProduct(data);
   } catch (err) {
     console.error(err);
     throw err;
@@ -189,9 +133,6 @@ export async function getProduct(id: number): Promise<Product> {
    GET ALL CATEGORIES
 ------------------------------------------------- */
 export async function getCategories(): Promise<WcCategory[]> {
-  return getLocalCategories();
-
-  /*
   try {
     const res = await fetch(`${WC_API_URL}/products/categories?per_page=100&hide_empty=true`, {
       headers: getAuthHeader(),
@@ -202,24 +143,39 @@ export async function getCategories(): Promise<WcCategory[]> {
     console.error(err);
     return [];
   }
-  */
 }
 
 /* -------------------------------------------------
    GET CATEGORY BY SLUG
 ------------------------------------------------- */
 export async function getCategoryBySlug(slug: string): Promise<WcCategory | null> {
-  const cats = getLocalCategories();
-  const matched = cats.find(c => c.slug === slug);
-  return matched || null;
+  try {
+    const res = await fetch(`${WC_API_URL}/products/categories?slug=${slug}`, {
+      headers: getAuthHeader(),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.length > 0 ? data[0] : null;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
 
 /* -------------------------------------------------
    GET SUBCATEGORIES (BY PARENT ID)
 ------------------------------------------------- */
 export async function getSubcategories(parentId: number): Promise<WcCategory[]> {
-  const cats = getLocalCategories();
-  return cats.filter(c => c.parent === parentId);
+  try {
+    const res = await fetch(`${WC_API_URL}/products/categories?parent=${parentId}&per_page=100`, {
+      headers: getAuthHeader(),
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 }
 
 /* -------------------------------------------------
