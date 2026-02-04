@@ -68,9 +68,14 @@ export function MainNavigation({ navTree, isLoading }: MainNavigationProps) {
                     </li>
                 ))}
 
-                {navTree.length === 0 && !isLoading && (
+                {isLoading && (
                     <li className="text-white/70 text-sm italic">
                         Loading Categories...
+                    </li>
+                )}
+                {navTree.length === 0 && !isLoading && (
+                    <li className="text-red-400/70 text-sm italic">
+                        Failed to load categories. Check API credentials.
                     </li>
                 )}
             </ul>

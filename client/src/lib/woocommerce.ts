@@ -134,7 +134,7 @@ export async function getProduct(id: number): Promise<Product> {
 ------------------------------------------------- */
 export async function getCategories(): Promise<WcCategory[]> {
   try {
-    const res = await fetch(`${WC_API_URL}/products/categories?per_page=100&hide_empty=true`, {
+    const res = await fetch(`${WC_API_URL}/products/categories?per_page=100&hide_empty=false`, {
       headers: getAuthHeader(),
     });
     if (!res.ok) throw new Error("Failed to fetch categories");
