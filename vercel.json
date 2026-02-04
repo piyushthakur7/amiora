@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/api/wc/(.*)",
+            "destination": "https://darkgray-rail-803191.hostingersite.com/wp-json/wc/v3/$1"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
