@@ -134,13 +134,26 @@ export async function getProduct(id: number): Promise<Product> {
 ------------------------------------------------- */
 export async function getCategories(): Promise<WcCategory[]> {
   try {
+    // Debug log to verify configuration is loaded
+    if (!CONSUMER_KEY || !CONSUMER_SECRET) {
+      console.error("WooCommerce API Credentials missing in environment variables. Please check .env file.");
+    }
+
     const res = await fetch(`${WC_API_URL}/products/categories?per_page=100&hide_empty=false`, {
       headers: getAuthHeader(),
     });
-    if (!res.ok) throw new Error("Failed to fetch categories");
+
+    if (!res.ok) {
+      console.error(`WooCommerce API Error: ${res.status} ${res.statusText}`);
+      try {
+        const text = await res.text();
+        console.error("Error details:", text);
+      } catch (e) { /* ignore */ }
+      throw new Error("Failed to fetch categories");
+    }
     return await res.json();
   } catch (err) {
-    console.error(err);
+    console.error("getCategories execution failed:", err);
     return [];
   }
 }
