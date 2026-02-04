@@ -150,7 +150,7 @@ test.describe('Shopping Cart E2E Tests', () => {
             await page.waitForTimeout(500);
 
             // Look for empty cart message
-            const emptyMessage = page.getByText(/empty/i, /no items/i);
+            const emptyMessage = page.getByText(/empty|no items/i);
             // Empty cart should show a message
         }
     });

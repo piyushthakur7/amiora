@@ -26,6 +26,12 @@ export default function Home() {
       "Amiora Diamonds - Luxury Fine Jewelry | Rings, Necklaces, Earrings";
   }, []);
 
+  // Fetch Latest 5 Products (sorted by date, newest first)
+  const { data: latestProducts, isLoading: loadingLatest } = useQuery<Product[]>({
+    queryKey: ["/api/products", "latest"],
+    queryFn: () => getProducts({ orderby: "date", order: "desc", per_page: "5" }),
+  });
+
   const { data: newArrivals, isLoading: loadingNew } = useQuery<Product[]>({
     queryKey: ["/api/products", "new"],
     queryFn: () => getProducts(),
@@ -44,6 +50,50 @@ export default function Home() {
 
       <ServiceFeatures />
       <CircularCategories />
+
+      {/* LATEST PRODUCTS SECTION */}
+      <section className="py-24 bg-gradient-to-b from-secondary/30 to-background">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-gold font-sans uppercase tracking-[0.2em] text-xs font-bold mb-3 block animate-pulse">
+              ✨ Just In
+            </span>
+            <h2 className="font-serif text-3xl md:text-5xl text-primary mb-4">
+              Latest Products
+            </h2>
+            <SectionDivider variant="simple" className="my-4" />
+            <p className="text-muted-foreground font-serif italic text-lg max-w-2xl mx-auto">
+              Discover our newest additions — fresh designs crafted with passion and precision.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-12 gap-x-6">
+            {loadingLatest
+              ? Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                  <Skeleton className="h-4 w-1/2 mx-auto" />
+                </div>
+              ))
+              : latestProducts?.slice(0, 5).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+          </div>
+
+          <div className="mt-16 text-center">
+            <Link href="/shop?sort=newest">
+              <Button
+                variant="outline"
+                className="border-gold text-gold hover:bg-gold hover:text-white px-10 py-6 h-auto font-serif text-lg tracking-wide rounded-none uppercase transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                Explore All New Arrivals
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <CategoryGrid />
 
       <SectionDivider variant="ornate" />
