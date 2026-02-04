@@ -1,9 +1,7 @@
- 
- 
-  e
 server/public
 vite.config.ts.*
 *.tar.gz
 *.pdf
 amioro pics/
 node_modules
+products.rar
