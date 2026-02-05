@@ -55,6 +55,21 @@ add_action('rest_api_init', function () {
         'callback' => 'amiora_razorpay_webhook',
         'permission_callback' => '__return_true', // Razorpay needs to access this
     ]);
+
+    // Order Status endpoint (for frontend polling)
+    register_rest_route('amiora/v1', '/order-status/(?P<order_id>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'amiora_get_order_status',
+        'permission_callback' => '__return_true', // Public endpoint for order status
+        'args' => [
+            'order_id' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_numeric($param);
+                }
+            ]
+        ]
+    ]);
 });
 
 /**
@@ -325,6 +340,58 @@ function amiora_razorpay_webhook(WP_REST_Request $request)
 
     // Other events - just acknowledge
     return new WP_REST_Response(['status' => 'ok'], 200);
+}
+
+/**
+ * Get Order Status Handler
+ * 
+ * Used by frontend to poll for payment confirmation.
+ * Returns order status so thank-you page can update in real-time.
+ */
+function amiora_get_order_status(WP_REST_Request $request)
+{
+    $order_id = intval($request->get_param('order_id'));
+
+    if ($order_id <= 0) {
+        return new WP_REST_Response([
+            'success' => false,
+            'error' => 'Invalid order ID'
+        ], 400);
+    }
+
+    try {
+        $order = wc_get_order($order_id);
+
+        if (!$order) {
+            return new WP_REST_Response([
+                'success' => false,
+                'error' => 'Order not found'
+            ], 404);
+        }
+
+        $status = $order->get_status();
+        $is_paid = $order->is_paid();
+        $date_paid = $order->get_date_paid();
+
+        return new WP_REST_Response([
+            'success' => true,
+            'order_id' => $order_id,
+            'status' => $status,
+            'is_paid' => $is_paid,
+            'payment_method' => $order->get_payment_method(),
+            'total' => $order->get_total(),
+            'currency' => $order->get_currency(),
+            'date_created' => $order->get_date_created() ? $order->get_date_created()->format('c') : null,
+            'date_paid' => $date_paid ? $date_paid->format('c') : null,
+            'razorpay_payment_id' => $order->get_meta('_razorpay_payment_id'),
+        ], 200);
+
+    } catch (Exception $e) {
+        return new WP_REST_Response([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
 }
 
 /**

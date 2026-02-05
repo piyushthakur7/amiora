@@ -247,3 +247,83 @@ export async function initiatePayment(
         callbacks.onError(error instanceof Error ? error : new Error(String(error)));
     }
 }
+
+/**
+ * Order Status Response from backend
+ */
+export interface OrderStatusResponse {
+    success: boolean;
+    order_id: number;
+    status: "pending" | "processing" | "completed" | "failed" | "cancelled" | "on-hold" | "refunded";
+    is_paid: boolean;
+    payment_method: string;
+    total: string;
+    currency: string;
+    date_created: string;
+    date_paid?: string;
+    error?: string;
+}
+
+/**
+ * Step 5: Check order status (for polling on Thank You page)
+ * 
+ * This polls the backend to check if webhook has updated the order status.
+ * Used to show real-time payment confirmation to user.
+ */
+export async function getOrderStatus(orderId: number): Promise<OrderStatusResponse> {
+    const endpoint = `${WP_API_BASE}/wp-json/amiora/v1/order-status/${orderId}`;
+
+    const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server error: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Poll order status until paid or timeout
+ * 
+ * @param orderId - WooCommerce order ID
+ * @param maxAttempts - Maximum polling attempts (default 30 = ~1 minute)
+ * @param intervalMs - Polling interval in ms (default 2000 = 2 seconds)
+ * @returns Promise resolving to order status when paid, or null on timeout
+ */
+export async function pollOrderStatus(
+    orderId: number,
+    maxAttempts: number = 30,
+    intervalMs: number = 2000
+): Promise<OrderStatusResponse | null> {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+            const status = await getOrderStatus(orderId);
+
+            // Order is confirmed paid
+            if (status.is_paid || status.status === "processing" || status.status === "completed") {
+                return status;
+            }
+
+            // Order failed
+            if (status.status === "failed" || status.status === "cancelled") {
+                return status;
+            }
+
+            // Still pending, wait and try again
+            await new Promise(resolve => setTimeout(resolve, intervalMs));
+        } catch (error) {
+            console.error("Error polling order status:", error);
+            // Continue polling even on error
+            await new Promise(resolve => setTimeout(resolve, intervalMs));
+        }
+    }
+
+    // Timeout - return null
+    return null;
+}
