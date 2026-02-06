@@ -327,3 +327,45 @@ export async function pollOrderStatus(
     // Timeout - return null
     return null;
 }
+
+/**
+ * Shipment Tracking Response
+ */
+export interface TrackingResponse {
+    success: boolean;
+    awb?: string;
+    courier?: string;
+    status: string;
+    tracking_url?: string;
+    message?: string;
+    activities?: Array<{
+        date: string;
+        status: string;
+        activity: string;
+        location: string;
+    }>;
+}
+
+/**
+ * Get shipment tracking info for an order
+ */
+export async function getShipmentTracking(orderId: number): Promise<TrackingResponse> {
+    const endpoint = `${WP_API_BASE}/wp-json/amiora/v1/tracking/${orderId}`;
+
+    const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        return {
+            success: false,
+            status: "pending",
+            message: "Could not fetch tracking info",
+        };
+    }
+
+    return response.json();
+}

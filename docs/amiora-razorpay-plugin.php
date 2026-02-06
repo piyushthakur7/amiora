@@ -1,24 +1,29 @@
 <?php
 /**
- * Plugin Name: Amiora Razorpay Integration
- * Description: Custom REST API endpoint for headless WooCommerce + Razorpay payments
- * Version: 1.0.0
+ * Plugin Name: Amiora Razorpay + Shiprocket Integration
+ * Description: Headless WooCommerce + Razorpay payments + Shiprocket shipping automation
+ * Version: 2.0.0
  * Author: Amiora Team
  * 
  * INSTALLATION:
  * 1. Create a folder: wp-content/plugins/amiora-razorpay/
  * 2. Save this file as: wp-content/plugins/amiora-razorpay/amiora-razorpay.php
  * 3. Activate the plugin in WordPress Admin > Plugins
- * 4. Add your Razorpay keys to wp-config.php:
+ * 4. Add your API keys to wp-config.php:
+ * 
+ *    // Razorpay Keys
  *    define('RAZORPAY_KEY_ID', 'rzp_live_xxxxx');
  *    define('RAZORPAY_KEY_SECRET', 'your_secret_key');
  * 
+ *    // Shiprocket Keys (for automatic shipping)
+ *    define('SHIPROCKET_EMAIL', 'your@email.com');
+ *    define('SHIPROCKET_PASSWORD', 'your_password');
+ * 
  * ARCHITECTURE:
- * - This plugin creates a REST API endpoint: /wp-json/amiora/v1/create-order
- * - Frontend calls this endpoint with cart + customer data
- * - This plugin creates WooCommerce order (pending) + Razorpay order
- * - Returns Razorpay order details to frontend
- * - Webhook endpoint verifies payment and updates WC order status
+ * - /wp-json/amiora/v1/create-order - Creates WC order + Razorpay order
+ * - /wp-json/amiora/v1/razorpay-webhook - Confirms payment, creates Shiprocket shipment
+ * - /wp-json/amiora/v1/order-status/{id} - Check order status
+ * - /wp-json/amiora/v1/tracking/{id} - Get shipment tracking
  */
 
 if (!defined('ABSPATH')) {
@@ -311,6 +316,16 @@ function amiora_razorpay_webhook(WP_REST_Request $request)
 
         error_log('Amiora Razorpay: Order #' . $order->get_id() . ' marked as paid');
 
+        // 🚀 AUTO-CREATE SHIPROCKET SHIPMENT
+        // This happens automatically after payment is confirmed
+        if (defined('SHIPROCKET_EMAIL') && defined('SHIPROCKET_PASSWORD')) {
+            error_log('Amiora Shiprocket: Creating shipment for order #' . $order->get_id());
+            amiora_create_shiprocket_order($order);
+        } else {
+            error_log('Amiora Shiprocket: Credentials not configured, skipping auto-shipment');
+            $order->add_order_note('Shiprocket: Auto-shipment skipped (API credentials not configured)');
+        }
+
         return new WP_REST_Response(['status' => 'success'], 200);
     }
 
@@ -432,3 +447,334 @@ add_action('init', function () {
         exit(0);
     }
 });
+
+// ============================================================================
+// SHIPROCKET INTEGRATION
+// ============================================================================
+
+/**
+ * Get Shiprocket Auth Token
+ * 
+ * Tokens are cached in WordPress transients for 24 hours
+ */
+function amiora_get_shiprocket_token()
+{
+    // Check cache first
+    $cached_token = get_transient('shiprocket_auth_token');
+    if ($cached_token) {
+        return $cached_token;
+    }
+
+    $email = defined('SHIPROCKET_EMAIL') ? SHIPROCKET_EMAIL : '';
+    $password = defined('SHIPROCKET_PASSWORD') ? SHIPROCKET_PASSWORD : '';
+
+    if (empty($email) || empty($password)) {
+        error_log('Amiora Shiprocket: API credentials not configured');
+        return false;
+    }
+
+    $response = wp_remote_post('https://apiv2.shiprocket.in/v1/external/auth/login', [
+        'headers' => [
+            'Content-Type' => 'application/json',
+        ],
+        'body' => json_encode([
+            'email' => $email,
+            'password' => $password,
+        ]),
+        'timeout' => 30,
+    ]);
+
+    if (is_wp_error($response)) {
+        error_log('Amiora Shiprocket: Auth failed - ' . $response->get_error_message());
+        return false;
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if (empty($body['token'])) {
+        error_log('Amiora Shiprocket: No token in response');
+        return false;
+    }
+
+    // Cache token for 23 hours (tokens last 24 hours)
+    set_transient('shiprocket_auth_token', $body['token'], 23 * HOUR_IN_SECONDS);
+
+    return $body['token'];
+}
+
+/**
+ * Create Shiprocket Order after payment is confirmed
+ * 
+ * @param WC_Order $order WooCommerce order object
+ * @return array|false Shiprocket order data or false on failure
+ */
+function amiora_create_shiprocket_order($order)
+{
+    $token = amiora_get_shiprocket_token();
+    if (!$token) {
+        $order->add_order_note('Shiprocket: Could not authenticate. Please create shipment manually.');
+        return false;
+    }
+
+    // Get order items
+    $items = [];
+    foreach ($order->get_items() as $item) {
+        $product = $item->get_product();
+        $items[] = [
+            'name' => $item->get_name(),
+            'sku' => $product ? $product->get_sku() : 'SKU-' . $item->get_product_id(),
+            'units' => $item->get_quantity(),
+            'selling_price' => $order->get_item_total($item, false, true),
+            'discount' => 0,
+            'tax' => $order->get_item_tax($item),
+            'hsn' => '7113', // HSN code for jewelry
+        ];
+    }
+
+    // Prepare shipment data
+    $shipping_data = [
+        'order_id' => (string) $order->get_id(),
+        'order_date' => $order->get_date_created()->format('Y-m-d H:i'),
+        'pickup_location' => 'Primary', // Configure in Shiprocket dashboard
+        'channel_id' => '', // Optional: your channel ID
+        'comment' => 'Amiora Jewelry Order',
+        'billing_customer_name' => $order->get_billing_first_name(),
+        'billing_last_name' => $order->get_billing_last_name(),
+        'billing_address' => $order->get_billing_address_1(),
+        'billing_address_2' => $order->get_billing_address_2(),
+        'billing_city' => $order->get_billing_city(),
+        'billing_pincode' => $order->get_billing_postcode(),
+        'billing_state' => $order->get_billing_state(),
+        'billing_country' => $order->get_billing_country() ?: 'India',
+        'billing_email' => $order->get_billing_email(),
+        'billing_phone' => preg_replace('/\D/', '', $order->get_billing_phone()),
+        'shipping_is_billing' => true,
+        'shipping_customer_name' => $order->get_shipping_first_name() ?: $order->get_billing_first_name(),
+        'shipping_last_name' => $order->get_shipping_last_name() ?: $order->get_billing_last_name(),
+        'shipping_address' => $order->get_shipping_address_1() ?: $order->get_billing_address_1(),
+        'shipping_address_2' => $order->get_shipping_address_2() ?: $order->get_billing_address_2(),
+        'shipping_city' => $order->get_shipping_city() ?: $order->get_billing_city(),
+        'shipping_pincode' => $order->get_shipping_postcode() ?: $order->get_billing_postcode(),
+        'shipping_country' => $order->get_shipping_country() ?: 'India',
+        'shipping_state' => $order->get_shipping_state() ?: $order->get_billing_state(),
+        'shipping_email' => $order->get_billing_email(),
+        'shipping_phone' => preg_replace('/\D/', '', $order->get_billing_phone()),
+        'order_items' => $items,
+        'payment_method' => 'Prepaid', // Already paid via Razorpay
+        'shipping_charges' => 0,
+        'giftwrap_charges' => 0,
+        'transaction_charges' => 0,
+        'total_discount' => $order->get_total_discount(),
+        'sub_total' => $order->get_subtotal(),
+        'length' => 10, // Default dimensions for jewelry box (cm)
+        'breadth' => 10,
+        'height' => 5,
+        'weight' => 0.1, // Default weight in kg
+    ];
+
+    // Create order in Shiprocket
+    $response = wp_remote_post('https://apiv2.shiprocket.in/v1/external/orders/create/adhoc', [
+        'headers' => [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $token,
+        ],
+        'body' => json_encode($shipping_data),
+        'timeout' => 30,
+    ]);
+
+    if (is_wp_error($response)) {
+        $order->add_order_note('Shiprocket: Order creation failed - ' . $response->get_error_message());
+        error_log('Amiora Shiprocket: Order creation failed - ' . $response->get_error_message());
+        return false;
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if (!empty($body['order_id'])) {
+        // Save Shiprocket data to order meta
+        $order->update_meta_data('_shiprocket_order_id', $body['order_id']);
+        $order->update_meta_data('_shiprocket_shipment_id', $body['shipment_id'] ?? '');
+        $order->update_meta_data('_shiprocket_status', $body['status'] ?? 'created');
+        $order->save();
+
+        $order->add_order_note(sprintf(
+            'Shiprocket order created! Order ID: %s, Shipment ID: %s',
+            $body['order_id'],
+            $body['shipment_id'] ?? 'pending'
+        ));
+
+        error_log('Amiora Shiprocket: Order created - ' . $body['order_id']);
+
+        // Optionally auto-assign courier (AWB generation)
+        if (!empty($body['shipment_id'])) {
+            amiora_assign_shiprocket_courier($order, $body['shipment_id'], $token);
+        }
+
+        return $body;
+    } else {
+        $error_msg = $body['message'] ?? json_encode($body);
+        $order->add_order_note('Shiprocket: Order creation failed - ' . $error_msg);
+        error_log('Amiora Shiprocket: Order creation failed - ' . $error_msg);
+        return false;
+    }
+}
+
+/**
+ * Auto-assign the cheapest courier and generate AWB
+ */
+function amiora_assign_shiprocket_courier($order, $shipment_id, $token)
+{
+    // Get available couriers
+    $pickup_postcode = '400001'; // Your pickup location pincode - UPDATE THIS
+    $delivery_postcode = $order->get_shipping_postcode() ?: $order->get_billing_postcode();
+    $weight = 0.1; // kg
+    $cod = 0; // Prepaid
+
+    $courier_url = sprintf(
+        'https://apiv2.shiprocket.in/v1/external/courier/serviceability/?pickup_postcode=%s&delivery_postcode=%s&weight=%s&cod=%s',
+        $pickup_postcode,
+        $delivery_postcode,
+        $weight,
+        $cod
+    );
+
+    $response = wp_remote_get($courier_url, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $token,
+        ],
+        'timeout' => 30,
+    ]);
+
+    if (is_wp_error($response)) {
+        $order->add_order_note('Shiprocket: Could not fetch couriers - ' . $response->get_error_message());
+        return false;
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    $couriers = $body['data']['available_courier_companies'] ?? [];
+
+    if (empty($couriers)) {
+        $order->add_order_note('Shiprocket: No couriers available for this pincode');
+        return false;
+    }
+
+    // Pick the cheapest courier
+    usort($couriers, function ($a, $b) {
+        return $a['rate'] <=> $b['rate'];
+    });
+
+    $selected_courier = $couriers[0];
+
+    // Assign courier (generate AWB)
+    $assign_response = wp_remote_post('https://apiv2.shiprocket.in/v1/external/courier/assign/awb', [
+        'headers' => [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $token,
+        ],
+        'body' => json_encode([
+            'shipment_id' => $shipment_id,
+            'courier_id' => $selected_courier['courier_company_id'],
+        ]),
+        'timeout' => 30,
+    ]);
+
+    if (is_wp_error($assign_response)) {
+        $order->add_order_note('Shiprocket: AWB assignment failed - ' . $assign_response->get_error_message());
+        return false;
+    }
+
+    $assign_body = json_decode(wp_remote_retrieve_body($assign_response), true);
+
+    if (!empty($assign_body['response']['data']['awb_code'])) {
+        $awb = $assign_body['response']['data']['awb_code'];
+        $courier_name = $selected_courier['courier_name'];
+
+        $order->update_meta_data('_shiprocket_awb', $awb);
+        $order->update_meta_data('_shiprocket_courier', $courier_name);
+        $order->save();
+
+        $order->add_order_note(sprintf(
+            'Shiprocket AWB Generated! AWB: %s, Courier: %s, Rate: ₹%s',
+            $awb,
+            $courier_name,
+            $selected_courier['rate']
+        ));
+
+        error_log('Amiora Shiprocket: AWB assigned - ' . $awb);
+        return true;
+    } else {
+        $order->add_order_note('Shiprocket: AWB generation pending - assign manually in dashboard');
+        return false;
+    }
+}
+
+/**
+ * REST API: Get shipment tracking
+ */
+add_action('rest_api_init', function () {
+    register_rest_route('amiora/v1', '/tracking/(?P<order_id>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'amiora_get_tracking',
+        'permission_callback' => '__return_true',
+    ]);
+});
+
+function amiora_get_tracking(WP_REST_Request $request)
+{
+    $order_id = intval($request->get_param('order_id'));
+    $order = wc_get_order($order_id);
+
+    if (!$order) {
+        return new WP_REST_Response(['error' => 'Order not found'], 404);
+    }
+
+    $awb = $order->get_meta('_shiprocket_awb');
+    $shipment_id = $order->get_meta('_shiprocket_shipment_id');
+    $courier = $order->get_meta('_shiprocket_courier');
+
+    if (empty($awb) && empty($shipment_id)) {
+        return new WP_REST_Response([
+            'success' => true,
+            'status' => 'pending',
+            'message' => 'Shipment not yet created',
+        ], 200);
+    }
+
+    // If we have AWB, get tracking from Shiprocket
+    if (!empty($awb)) {
+        $token = amiora_get_shiprocket_token();
+        if ($token) {
+            $response = wp_remote_get(
+                'https://apiv2.shiprocket.in/v1/external/courier/track/awb/' . $awb,
+                [
+                    'headers' => ['Authorization' => 'Bearer ' . $token],
+                    'timeout' => 30,
+                ]
+            );
+
+            if (!is_wp_error($response)) {
+                $body = json_decode(wp_remote_retrieve_body($response), true);
+                $tracking = $body['tracking_data'] ?? [];
+
+                return new WP_REST_Response([
+                    'success' => true,
+                    'awb' => $awb,
+                    'courier' => $courier,
+                    'status' => $tracking['shipment_status'] ?? 'In Transit',
+                    'tracking_url' => "https://shiprocket.co/tracking/" . $awb,
+                    'activities' => $tracking['shipment_track_activities'] ?? [],
+                ], 200);
+            }
+        }
+    }
+
+    // Fallback response
+    return new WP_REST_Response([
+        'success' => true,
+        'awb' => $awb,
+        'courier' => $courier,
+        'status' => 'Processing',
+        'tracking_url' => $awb ? "https://shiprocket.co/tracking/" . $awb : null,
+    ], 200);
+}
+

@@ -1,4 +1,5 @@
 import type { Product } from "@/types/Product";
+import type { Order } from "@/types/Order";
 
 /* -------------------------------------------------
    CONFIG
@@ -240,6 +241,7 @@ export async function createOrder(items: { product_id: number; quantity: number 
       throw new Error(errorData.message || "Failed to create order");
     }
 
+
     const data = await res.json();
     return data.payment_url || null;
   } catch (err) {
@@ -247,3 +249,48 @@ export async function createOrder(items: { product_id: number; quantity: number 
     throw err;
   }
 }
+
+/* -------------------------------------------------
+   GET ORDER
+------------------------------------------------- */
+export async function getOrder(orderId: number): Promise<Order> {
+  try {
+    const res = await fetch(`${WC_API_URL}/orders/${orderId}`, {
+      headers: getAuthHeader(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch order: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to fetch order", err);
+    throw err;
+  }
+}
+
+/* -------------------------------------------------
+   CANCEL ORDER
+------------------------------------------------- */
+export async function cancelOrder(orderId: number): Promise<Order> {
+  try {
+    const res = await fetch(`${WC_API_URL}/orders/${orderId}`, {
+      method: "PUT",
+      headers: getAuthHeader(),
+      body: JSON.stringify({ status: "cancelled" }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to cancel order");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Order cancellation failed", err);
+    throw err;
+  }
+}
+

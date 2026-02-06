@@ -17,6 +17,9 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Wishlist from "@/pages/Wishlist";
 import ThankYou from "@/pages/ThankYou";
+import Contact from "@/pages/Contact";
+import About from "@/pages/About";
+import Account from "@/pages/Account";
 
 // Fallback (replaces 404)
 import ComingSoonFallback from "./pages/ComingSoonFallback";
@@ -70,7 +73,12 @@ function Router() {
       <Route path="/login"><Login /></Route>
       <Route path="/register"><Register /></Route>
       <Route path="/wishlist"><Wishlist /></Route>
+      <Route path="/account"><Account /></Route>
       <Route path="/thank-you"><ThankYou /></Route>
+
+      {/* Static Pages */}
+      <Route path="/contact"><Contact /></Route>
+      <Route path="/about"><About /></Route>
 
       {/* DYNAMIC CATEGORY ROUTES (The catch-all logic) */}
 

@@ -164,8 +164,15 @@ export function Header() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">Orders</DropdownMenuItem>
+                  <Link href="/account">
+                    <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
+                  </Link>
+                  <Link href="/account">
+                    <DropdownMenuItem className="cursor-pointer">Orders</DropdownMenuItem>
+                  </Link>
+                  <Link href="/info/track-order">
+                    <DropdownMenuItem className="cursor-pointer">Track Order</DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600" onClick={logout}>
                     <LogOut className="mr-2 h-4 w-4" />

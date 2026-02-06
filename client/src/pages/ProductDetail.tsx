@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect, useMemo } from "react";
 import { useCart } from "@/lib/cart-store";
+import { useWishlist } from "@/lib/wishlist-store";
 import { useToast } from "@/hooks/use-toast";
 import { mapCategory } from "../lib/mapCategory";
 
@@ -18,6 +19,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const { addItem } = useCart();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
 
   const { data: products } = useQuery({
@@ -129,11 +131,10 @@ export default function ProductDetail() {
                 <button
                   key={image.id}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
-                    selectedImage === index
-                      ? "border-primary"
-                      : "border-transparent"
-                  }`}
+                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${selectedImage === index
+                    ? "border-primary"
+                    : "border-transparent"
+                    }`}
                 >
                   <img
                     src={image.src}
@@ -218,9 +219,24 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" size="lg" className="flex-1">
-              <Heart className="h-4 w-4 mr-2" />
-              Add to Wishlist
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1"
+              onClick={() => {
+                if (!product) return;
+                const inWishlist = isInWishlist(product.id);
+                if (inWishlist) {
+                  removeFromWishlist(product.id);
+                  toast({ title: "Removed from wishlist" });
+                } else {
+                  addToWishlist(product);
+                  toast({ title: "Added to wishlist", description: `${product.name} saved to your wishlist.` });
+                }
+              }}
+            >
+              <Heart className={`h-4 w-4 mr-2 ${product && isInWishlist(product.id) ? "fill-red-500 text-red-500" : ""}`} />
+              {product && isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
             </Button>
             <Button variant="outline" size="icon">
               <Share2 className="h-4 w-4" />
