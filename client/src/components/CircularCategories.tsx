@@ -5,32 +5,52 @@ const categories = [
     {
         name: "Rings",
         slug: "rings",
-        image: "https://images.unsplash.com/photo-1605100804763-ebea46631e57?auto=format&fit=crop&q=80&w=400&h=400"
+        image: "/images/categories/category_rings_1770383089715.png"
     },
     {
         name: "Earrings",
         slug: "earrings",
-        image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=400&h=400"
+        image: "/images/categories/category_earrings_1770383108629.png"
     },
     {
         name: "Neckwear",
         slug: "necklaces",
-        image: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?auto=format&fit=crop&q=80&w=400&h=400"
+        image: "/images/categories/category_neckwear_1770383124444.png"
     },
     {
         name: "Wristwear",
         slug: "bracelets",
-        image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=400&h=400"
+        image: "/images/categories/category_wristwear_1770383156233.png"
+    },
+    {
+        name: "Bangles",
+        slug: "bangles",
+        image: "/images/categories/category_bangles_1770383252331.png"
+    },
+    {
+        name: "Pendants",
+        slug: "pendants",
+        image: "/images/categories/category_pendants_1770383227454.png"
+    },
+    {
+        name: "Mangalsutra",
+        slug: "mangalsutra",
+        image: "/images/categories/category_mangalsutra_1770383194966.png"
+    },
+    {
+        name: "Nosepins",
+        slug: "nosepins",
+        image: "/images/categories/category_nosepins_1770383211469.png"
     },
     {
         name: "Men's",
         slug: "mens",
-        image: "https://images.unsplash.com/photo-1617038220319-88af1199a7cd?auto=format&fit=crop&q=80&w=400&h=400"
+        image: "/images/categories/category_mens_1770383170415.png"
     },
     {
-        name: "All Jewellery",
-        slug: "shop",
-        image: "https://images.unsplash.com/photo-1573408301185-a1d3106839b9?auto=format&fit=crop&q=80&w=400&h=400"
+        name: "Kids",
+        slug: "kids",
+        image: "/images/categories/category_kids_1770383281734.png"
     }
 ];
 
