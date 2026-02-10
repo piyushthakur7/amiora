@@ -35,8 +35,8 @@
 
 ```php
 // Razorpay API Keys
-define('RAZORPAY_KEY_ID', 'rzp_live_xxxxxxxxxx');     // Your Key ID
-define('RAZORPAY_KEY_SECRET', 'xxxxxxxxxxxxxxxx');    // Your Key Secret
+define('RAZORPAY_KEY_ID', 'rzp_live_SEQPYmvrjRzVAv');     // Your Key ID
+define('RAZORPAY_KEY_SECRET', 'Plf2TMdZhU2K8IcpkJapRO7q');    // Your Key Secret
 ```
 
 4. Activate the plugin in **WordPress Admin → Plugins**

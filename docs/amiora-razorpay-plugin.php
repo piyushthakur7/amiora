@@ -12,12 +12,12 @@
  * 4. Add your API keys to wp-config.php:
  * 
  *    // Razorpay Keys
- *    define('RAZORPAY_KEY_ID', 'rzp_live_xxxxx');
- *    define('RAZORPAY_KEY_SECRET', 'your_secret_key');
+ *    define('RAZORPAY_KEY_ID', 'rzp_live_SEQPYmvrjRzVAv');
+ *    define('RAZORPAY_KEY_SECRET', 'Plf2TMdZhU2K8IcpkJapRO7q');
  * 
  *    // Shiprocket Keys (for automatic shipping)
- *    define('SHIPROCKET_EMAIL', 'your@email.com');
- *    define('SHIPROCKET_PASSWORD', 'your_password');
+ *    define('SHIPROCKET_EMAIL', 'tpiyush300@gmail.com');
+ *    define('SHIPROCKET_PASSWORD', 'kG4^UXK5lMW@duI6iR*qkIANcY$OExWB');
  * 
  * ARCHITECTURE:
  * - /wp-json/amiora/v1/create-order - Creates WC order + Razorpay order

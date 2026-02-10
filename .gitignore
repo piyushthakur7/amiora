@@ -5,3 +5,4 @@ vite.config.ts.*
 amioro pics/
 node_modules
 products.rar
+.env
