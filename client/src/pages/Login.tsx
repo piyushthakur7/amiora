@@ -3,17 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth-context";
-import { useLocation, Link } from "wouter";
+import { useLocation, useSearch, Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { login } = useAuth();
     const [, setLocation] = useLocation();
     const { toast } = useToast();
+    const searchStr = useSearch();
+    const redirectTo = new URLSearchParams(searchStr).get("redirect") || "/";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +40,7 @@ export default function Login() {
                     title: "Welcome back!",
                     description: "You have successfully logged in."
                 });
-                setLocation("/");
+                setLocation(redirectTo);
             } else {
                 toast({
                     title: "Login Failed",
@@ -81,15 +84,40 @@ export default function Login() {
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Password</label>
-                            <Input
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                disabled={isSubmitting}
-                                className="border-gold/30 focus-visible:ring-gold"
-                            />
+                            <div className="relative">
+                                <Input
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    disabled={isSubmitting}
+                                    className="border-gold/30 focus-visible:ring-gold pr-10"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                    ) : (
+                                        <Eye className="h-4 w-4 text-muted-foreground" />
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-end">
+                            <a
+                                href="https://darkgray-rail-803191.hostingersite.com/my-account/lost-password/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-primary hover:underline"
+                            >
+                                Forgot password?
+                            </a>
                         </div>
                         <Button
                             type="submit"
@@ -107,7 +135,7 @@ export default function Login() {
                         </Button>
                         <div className="text-center text-sm">
                             <span className="text-muted-foreground">Don't have an account? </span>
-                            <Link href="/register" className="text-gold hover:underline font-medium">
+                            <Link href={`/register${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`} className="text-gold hover:underline font-medium">
                                 Sign up
                             </Link>
                         </div>

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth-context";
-import { useLocation, Link } from "wouter";
+import { useLocation, useSearch, Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
@@ -16,6 +16,8 @@ export default function Register() {
     const { register } = useAuth();
     const [, setLocation] = useLocation();
     const { toast } = useToast();
+    const searchStr = useSearch();
+    const redirectTo = new URLSearchParams(searchStr).get("redirect") || "/";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -48,7 +50,7 @@ export default function Register() {
                     title: "Account Created",
                     description: "Welcome to Amiora Diamonds!"
                 });
-                setLocation("/");
+                setLocation(redirectTo);
             } else {
                 toast({
                     title: "Registration Failed",
@@ -144,7 +146,7 @@ export default function Register() {
                         </Button>
                         <div className="text-center text-sm">
                             <span className="text-muted-foreground">Already have an account? </span>
-                            <Link href="/login" className="text-gold hover:underline font-medium">
+                            <Link href={`/login${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`} className="text-gold hover:underline font-medium">
                                 Sign in
                             </Link>
                         </div>

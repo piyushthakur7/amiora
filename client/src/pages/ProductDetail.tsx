@@ -117,11 +117,11 @@ export default function ProductDetail() {
       <div className="grid md:grid-cols-2 gap-8 md:gap-12 mb-16">
         {/* LEFT SECTION */}
         <div className="space-y-4">
-          <div className="aspect-square rounded-lg overflow-hidden bg-accent/20">
+          <div className="aspect-square md:aspect-auto md:h-[500px] rounded-lg overflow-hidden bg-accent/20 flex items-center justify-center">
             <img
               src={images[selectedImage]?.src}
               alt={images[selectedImage]?.alt || product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain mix-blend-multiply"
             />
           </div>
 

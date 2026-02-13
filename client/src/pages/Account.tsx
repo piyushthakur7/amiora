@@ -11,36 +11,26 @@ import {
 } from "lucide-react";
 import { useWishlist } from "@/lib/wishlist-store";
 import { ProductCard } from "@/components/ProductCard";
-
-// Mock orders for demo - in production, fetch from WooCommerce
-const mockOrders = [
-    {
-        id: 12345,
-        date: "2026-02-01",
-        status: "processing",
-        total: "₹45,999",
-        items: 2
-    },
-    {
-        id: 12298,
-        date: "2026-01-15",
-        status: "completed",
-        total: "₹32,500",
-        items: 1
-    },
-    {
-        id: 12156,
-        date: "2025-12-20",
-        status: "completed",
-        total: "₹78,000",
-        items: 3
-    }
-];
+import { getCustomerOrders } from "@/lib/woocommerce";
+import type { Order } from "@/types/Order";
 
 export default function Account() {
     const { user, isAuthenticated, isLoading, logout } = useAuth();
     const [, setLocation] = useLocation();
     const { items: wishlistItems } = useWishlist();
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+
+    // Fetch orders when user is authenticated
+    useEffect(() => {
+        if (user?.email) {
+            setIsLoadingOrders(true);
+            getCustomerOrders(user.email)
+                .then(data => setOrders(data))
+                .catch(err => console.error("Failed to load orders:", err))
+                .finally(() => setIsLoadingOrders(false));
+        }
+    }, [user?.email]);
 
     // Redirect to login if not authenticated
     useEffect(() => {
@@ -113,7 +103,11 @@ export default function Account() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                {mockOrders.length === 0 ? (
+                                {isLoadingOrders ? (
+                                    <div className="flex justify-center py-12">
+                                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                    </div>
+                                ) : orders.length === 0 ? (
                                     <div className="text-center py-12">
                                         <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                                         <h3 className="font-medium text-lg mb-2">No orders yet</h3>
@@ -126,7 +120,7 @@ export default function Account() {
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        {mockOrders.map((order) => (
+                                        {orders.map((order) => (
                                             <div
                                                 key={order.id}
                                                 className="border rounded-lg p-4 hover:bg-secondary/30 transition-colors"
@@ -142,13 +136,13 @@ export default function Account() {
                                                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                                             <span className="flex items-center gap-1">
                                                                 <Clock className="h-3 w-3" />
-                                                                {new Date(order.date).toLocaleDateString()}
+                                                                {new Date(order.date_created).toLocaleDateString()}
                                                             </span>
-                                                            <span>{order.items} item(s)</span>
+                                                            <span>{order.line_items.reduce((acc: number, item: any) => acc + item.quantity, 0)} item(s)</span>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-4">
-                                                        <span className="font-semibold text-primary">{order.total}</span>
+                                                        <span className="font-semibold text-primary">₹{order.total}</span>
                                                         <Link href={`/info/track-order?id=${order.id}`}>
                                                             <Button variant="ghost" size="sm" className="gap-1">
                                                                 Track

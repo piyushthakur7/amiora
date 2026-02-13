@@ -294,3 +294,26 @@ export async function cancelOrder(orderId: number): Promise<Order> {
   }
 }
 
+/* -------------------------------------------------
+   GET CUSTOMER ORDERS (by email)
+------------------------------------------------- */
+export async function getCustomerOrders(email: string): Promise<Order[]> {
+  try {
+    const res = await fetch(
+      `${WC_API_URL}/orders?search=${encodeURIComponent(email)}&per_page=20&orderby=date&order=desc`,
+      { headers: getAuthHeader() }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch orders: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data;
+  } catch (err) {
+    console.error("Failed to fetch customer orders", err);
+    return [];
+  }
+}
+

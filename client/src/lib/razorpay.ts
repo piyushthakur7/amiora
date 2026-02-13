@@ -94,15 +94,22 @@ const WP_API_BASE = import.meta.env.VITE_WC_URL || "";
 export async function createPaymentOrder(
     lineItems: CartLineItem[],
     customer: CustomerDetails,
-    total: number
+    total: number,
+    authToken?: string,
+    paymentMethod: "razorpay" | "cod" = "razorpay"
 ): Promise<CreateOrderResponse> {
     const endpoint = `${WP_API_BASE}/wp-json/amiora/v1/create-order`;
 
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+    };
+    if (authToken) {
+        headers["Authorization"] = `Bearer ${authToken}`;
+    }
+
     const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
             line_items: lineItems,
             billing: {
@@ -126,6 +133,7 @@ export async function createPaymentOrder(
                 country: "IN",
             },
             total: total,
+            payment_method: paymentMethod,
         }),
     });
 
@@ -224,13 +232,25 @@ export async function initiatePayment(
         onSuccess: (response: RazorpaySuccessResponse, wcOrderId: number) => void;
         onDismiss?: () => void;
         onError: (error: Error) => void;
-    }
+    },
+    authToken?: string,
+    paymentMethod: "razorpay" | "cod" = "razorpay"
 ): Promise<void> {
     try {
         // Step 1: Create order on backend
-        const orderData = await createPaymentOrder(lineItems, customer, total);
+        const orderData = await createPaymentOrder(lineItems, customer, total, authToken, paymentMethod);
 
-        // Step 2: Load Razorpay script
+        // If COD, we just return success immediately (mocking a "successful" payment for the frontend flow)
+        if (paymentMethod === "cod") {
+            callbacks.onSuccess({
+                razorpay_payment_id: "cod_" + orderData.wc_order_id,
+                razorpay_order_id: "",
+                razorpay_signature: ""
+            }, orderData.wc_order_id);
+            return;
+        }
+
+        // Step 2: Load Razorpay script (only for online payments)
         const scriptLoaded = await loadRazorpayScript();
         if (!scriptLoaded) {
             throw new Error("Failed to load payment gateway. Please try again.");

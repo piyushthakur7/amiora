@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/lib/cart-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,25 +7,53 @@ import { useToast } from "@/hooks/use-toast";
 import { initiatePayment, type CustomerDetails, type RazorpaySuccessResponse } from "@/lib/razorpay";
 import { Loader2, Lock, ShoppingBag, CreditCard, MapPin, User } from "lucide-react";
 import { useLocation } from "wouter";
+import { useAuth } from "@/lib/auth-context";
+import { getStoredToken } from "@/lib/wp-auth";
 
 export default function Checkout() {
   const { items, getSubtotal, clearCart } = useCart();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState<"details" | "payment">("details");
+  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">("razorpay");
 
-  // Customer form state
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please sign in to complete your purchase.",
+        variant: "destructive",
+      });
+      setLocation("/login?redirect=/checkout");
+    }
+  }, [isAuthenticated, isLoading, setLocation, toast]);
+
+  // Customer form state — auto-fill from user profile
   const [customer, setCustomer] = useState<CustomerDetails>({
-    firstName: "",
-    lastName: "",
-    email: "",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
     phone: "",
     address: "",
     city: "",
     state: "",
     pincode: "",
   });
+
+  // Update form when user data loads
+  useEffect(() => {
+    if (user) {
+      setCustomer((prev) => ({
+        ...prev,
+        firstName: prev.firstName || user.firstName || "",
+        lastName: prev.lastName || user.lastName || "",
+        email: prev.email || user.email || "",
+      }));
+    }
+  }, [user]);
 
   const [errors, setErrors] = useState<Partial<Record<keyof CustomerDetails, string>>>({});
 
@@ -112,11 +140,12 @@ export default function Checkout() {
     await initiatePayment(lineItems, customer, totalPrice, {
       onSuccess: (response: RazorpaySuccessResponse, wcOrderId: number) => {
         // Payment popup completed - redirect to thank you page
-        // NOTE: This does NOT mean payment is verified!
-        // Actual verification happens via webhook on backend.
-        // This is just for UX.
         clearCart();
-        setLocation(`/thank-you?order=${wcOrderId}&payment_id=${response.razorpay_payment_id}`);
+        const params = new URLSearchParams({
+          order: String(wcOrderId),
+          payment_id: response.razorpay_payment_id
+        });
+        setLocation(`/thank-you?${params.toString()}`);
       },
       onDismiss: () => {
         setIsProcessing(false);
@@ -128,13 +157,22 @@ export default function Checkout() {
       onError: (error) => {
         setIsProcessing(false);
         toast({
-          title: "Payment Error",
+          title: "Order Failed",
           description: error.message || "Something went wrong. Please try again.",
           variant: "destructive",
         });
       },
-    });
+    }, getStoredToken() || undefined, paymentMethod);
   };
+
+  // Not authenticated or loading — show nothing (redirect will happen)
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   // Empty cart state
   if (items.length === 0) {
@@ -353,23 +391,65 @@ export default function Checkout() {
                   </button>
                 </div>
 
-                {/* Secure Payment Notice */}
-                <div className="bg-green-50 rounded-lg p-4 border border-green-100 flex items-start gap-3 mb-6">
-                  <Lock className="h-5 w-5 text-green-700 mt-0.5" />
-                  <div className="text-sm text-green-800">
-                    <p className="font-semibold mb-1">Secure Payment via Razorpay</p>
-                    <p>
-                      Pay securely with UPI, Cards, Netbanking, or Wallets. Your payment information
-                      is encrypted and never stored on our servers.
-                    </p>
+                {/* Payment Method Selection */}
+                <div className="bg-secondary/10 rounded-lg p-5 mb-6 border">
+                  <h3 className="text-sm font-semibold mb-3 uppercase tracking-wider text-muted-foreground">Select Payment Method</h3>
+                  <div className="space-y-3">
+                    {/* Online Payment Option */}
+                    <label className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-all ${paymentMethod === 'razorpay' ? 'bg-primary/5 border-primary ring-1 ring-primary' : 'bg-card hover:bg-secondary/20'}`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="razorpay"
+                        checked={paymentMethod === 'razorpay'}
+                        onChange={() => setPaymentMethod('razorpay')}
+                        className="mt-1 accent-primary"
+                      />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-semibold text-primary">Online Payment</span>
+                          <div className="flex gap-1 opacity-70">
+                            <img src="https://razorpay.com/assets/razorpay-logo.svg" alt="UPI Cards" className="h-4" />
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Secure payment via UPI, Cards, NetBanking, or Wallets.
+                        </p>
+                      </div>
+                    </label>
+
+                    {/* Cash on Delivery Option */}
+                    <label className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-all ${paymentMethod === 'cod' ? 'bg-primary/5 border-primary ring-1 ring-primary' : 'bg-card hover:bg-secondary/20'}`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cod"
+                        checked={paymentMethod === 'cod'}
+                        onChange={() => setPaymentMethod('cod')}
+                        className="mt-1 accent-primary"
+                      />
+                      <div>
+                        <span className="font-semibold text-primary block mb-1">Cash on Delivery (COD)</span>
+                        <p className="text-sm text-muted-foreground">
+                          Pay with cash when your order is delivered.
+                        </p>
+                      </div>
+                    </label>
                   </div>
                 </div>
 
-                {/* Payment Methods Preview */}
-                <div className="flex items-center justify-center gap-4 mb-6 py-4 border-y border-dashed">
-                  <img src="https://razorpay.com/assets/razorpay-logo.svg" alt="Razorpay" className="h-6 opacity-70" />
-                  <span className="text-xs text-muted-foreground">UPI • Cards • NetBanking • Wallets</span>
-                </div>
+                {/* Secure Payment Notice (only for online) */}
+                {paymentMethod === 'razorpay' && (
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-100 flex items-start gap-3 mb-6">
+                    <Lock className="h-5 w-5 text-green-700 mt-0.5" />
+                    <div className="text-sm text-green-800">
+                      <p className="font-semibold mb-1">Secure Payment via Razorpay</p>
+                      <p>
+                        Your payment information is encrypted and never stored on our servers.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex gap-4">
                   <Button
@@ -391,7 +471,7 @@ export default function Checkout() {
                         Processing...
                       </>
                     ) : (
-                      `Pay ₹${totalPrice.toLocaleString()}`
+                      paymentMethod === 'cod' ? `Place Order with COD` : `Pay ₹${totalPrice.toLocaleString()}`
                     )}
                   </Button>
                 </div>

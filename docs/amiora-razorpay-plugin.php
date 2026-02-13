@@ -94,6 +94,7 @@ function amiora_create_order(WP_REST_Request $request)
     $billing = $params['billing'] ?? [];
     $shipping = $params['shipping'] ?? [];
     $total = floatval($params['total'] ?? 0);
+    $payment_method = $params['payment_method'] ?? 'razorpay'; // Default to razorpay if not set
 
     // Validate required fields
     if (empty($line_items)) {
@@ -147,57 +148,85 @@ function amiora_create_order(WP_REST_Request $request)
 
         // Calculate totals
         $order->calculate_totals();
+        $order->save(); // Save to ensure totals are updated
 
-        // Set payment method
-        $order->set_payment_method('razorpay');
-        $order->set_payment_method_title('Razorpay');
-
-        // Set status to pending
-        $order->set_status('pending', 'Order created via headless checkout');
-
-        // Save order
-        $order->save();
-
-        $wc_order_id = $order->get_id();
         $order_total = $order->get_total();
 
-        // 2. Create Razorpay Order
-        $razorpay_key_id = defined('RAZORPAY_KEY_ID') ? RAZORPAY_KEY_ID : '';
-        $razorpay_key_secret = defined('RAZORPAY_KEY_SECRET') ? RAZORPAY_KEY_SECRET : '';
+        // Handle specific payment methods
+        // If COD or if Order Total is 0 (Free Order), skip Razorpay
+        if ($payment_method === 'cod' || $order_total <= 0) {
+            // Cash on Delivery or Free Order
+            $order->set_payment_method($order_total <= 0 ? 'free_checkout' : 'cod');
+            $order->set_payment_method_title($order_total <= 0 ? 'Free Checkout' : 'Cash on Delivery');
 
-        if (empty($razorpay_key_id) || empty($razorpay_key_secret)) {
-            throw new Exception('Razorpay API keys not configured');
-        }
+            // Set status to processing (ready to ship)
+            $order->set_status('processing', 'Order created via ' . ($order_total <= 0 ? 'Free Checkout' : 'COD'));
+            $order->save();
 
-        // Amount in paise (smallest currency unit)
-        $amount_paise = intval($order_total * 100);
+            $wc_order_id = $order->get_id();
 
-        $razorpay_order = amiora_create_razorpay_order([
-            'amount' => $amount_paise,
-            'currency' => 'INR',
-            'receipt' => 'order_' . $wc_order_id,
-            'notes' => [
+            // Return success directly
+            return new WP_REST_Response([
+                'success' => true,
                 'wc_order_id' => $wc_order_id,
-            ],
-        ], $razorpay_key_id, $razorpay_key_secret);
+                'payment_method' => $order_total <= 0 ? 'free_checkout' : 'cod',
+                'status' => 'processing',
+                'total' => $order_total
+            ], 200);
 
-        if (isset($razorpay_order['error'])) {
-            throw new Exception($razorpay_order['error']['description'] ?? 'Razorpay order creation failed');
+        } else {
+            // Razorpay (Default) for non-zero orders
+            $order->set_payment_method('razorpay');
+            $order->set_payment_method_title('Razorpay');
+
+            // Set status to pending (waiting for payment)
+            $order->set_status('pending', 'Order created via headless checkout');
+            $order->save();
+
+            $wc_order_id = $order->get_id();
+
+            // 2. Create Razorpay Order
+            $razorpay_key_id = defined('RAZORPAY_KEY_ID') ? RAZORPAY_KEY_ID : '';
+            $razorpay_key_secret = defined('RAZORPAY_KEY_SECRET') ? RAZORPAY_KEY_SECRET : '';
+
+            if (empty($razorpay_key_id) || empty($razorpay_key_secret)) {
+                throw new Exception('Razorpay API keys not configured');
+            }
+
+            // Amount in paise (smallest currency unit)
+            $amount_paise = intval($order_total * 100);
+
+            if ($amount_paise <= 0) {
+                throw new Exception('Invalid order amount for Razorpay');
+            }
+
+            $razorpay_order = amiora_create_razorpay_order([
+                'amount' => $amount_paise,
+                'currency' => 'INR',
+                'receipt' => 'order_' . $wc_order_id,
+                'notes' => [
+                    'wc_order_id' => $wc_order_id,
+                ],
+            ], $razorpay_key_id, $razorpay_key_secret);
+
+            if (isset($razorpay_order['error'])) {
+                throw new Exception($razorpay_order['error']['description'] ?? 'Razorpay order creation failed');
+            }
+
+            // 3. Save Razorpay Order ID to WC Order Meta
+            $order->update_meta_data('_razorpay_order_id', $razorpay_order['id']);
+            $order->save();
+
+            // 4. Return success response
+            return new WP_REST_Response([
+                'success' => true,
+                'wc_order_id' => $wc_order_id,
+                'razorpay_order_id' => $razorpay_order['id'],
+                'amount' => $amount_paise,
+                'currency' => 'INR',
+                'key_id' => $razorpay_key_id,
+            ], 200);
         }
-
-        // 3. Save Razorpay Order ID to WC Order Meta
-        $order->update_meta_data('_razorpay_order_id', $razorpay_order['id']);
-        $order->save();
-
-        // 4. Return success response
-        return new WP_REST_Response([
-            'success' => true,
-            'wc_order_id' => $wc_order_id,
-            'razorpay_order_id' => $razorpay_order['id'],
-            'amount' => $amount_paise,
-            'currency' => 'INR',
-            'key_id' => $razorpay_key_id,
-        ], 200);
 
     } catch (Exception $e) {
         return new WP_REST_Response([

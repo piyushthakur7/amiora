@@ -93,9 +93,12 @@ export async function wpLogin(username: string, password: string): Promise<AuthR
         const data = await response.json();
 
         if (!response.ok) {
+            const errorMessage = data.message || "Login failed. Please check your credentials.";
+            // Strip HTML tags from error message
+            const cleanError = errorMessage.replace(/<[^>]*>?/gm, '');
             return {
                 success: false,
-                error: data.message || "Login failed. Please check your credentials.",
+                error: cleanError,
             };
         }
 
