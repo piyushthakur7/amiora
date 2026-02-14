@@ -107,7 +107,7 @@ export function Header() {
           <div className="flex justify-center items-center">
             <Link href="/">
               <img
-                src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
+                src="/images/amiora-logo-new.png"
                 alt="Amiora Diamonds"
                 className="h-12 md:h-24 object-contain drop-shadow-[0_0_25px_rgba(200,164,106,0.5)] hover:drop-shadow-[0_0_25px_rgba(200,164,106,0.6)] transition-all duration-300 hover:scale-105"
               />

@@ -42,7 +42,7 @@ export function Preloader() {
             ${showContent ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
         >
           <img
-            src="https://github.com/piyushthakur7/bm-scrubber-images-/blob/main/Amiora-final-logo-01.png?raw=true"
+            src="/images/amiora-logo-new.png"
             alt="Amiora Diamonds"
             className="w-48 sm:w-64 md:w-80 h-auto object-contain drop-shadow-2xl"
           />

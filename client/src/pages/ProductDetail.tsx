@@ -41,7 +41,7 @@ export default function ProductDetail() {
     if (!products || !productBucket) return [];
 
     return products.filter((p: any) => {
-      if (p.id === product.id) return false;
+      if (p.id === product?.id) return false;
       const wcCats = p.categories || [];
       const mapped = mapCategory(wcCats[0]?.name || "");
       return mapped === productBucket;
@@ -175,9 +175,9 @@ export default function ProductDetail() {
             )}
           </div>
 
-          {product.attributes?.length > 0 && (
+          {(product.attributes?.length ?? 0) > 0 && (
             <div className="space-y-3">
-              {product.attributes.map((attr: any) => (
+              {product.attributes?.map((attr: any) => (
                 <div key={attr.id}>
                   <p className="text-sm font-semibold mb-2">{attr.name}:</p>
                   <div className="flex gap-2">
