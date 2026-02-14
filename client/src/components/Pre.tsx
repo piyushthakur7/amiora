@@ -42,7 +42,7 @@ export function Preloader() {
             ${showContent ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
         >
           <img
-            src="/images/amiora-logo-new.png"
+            src="/images/Amiora-final-logo-02.png"
             alt="Amiora Diamonds"
             className="w-48 sm:w-64 md:w-80 h-auto object-contain drop-shadow-2xl"
           />
