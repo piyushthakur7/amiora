@@ -1,10 +1,10 @@
-import { useParams, Link } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../lib/woocommerce";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Share2, Truck, Shield, RefreshCw } from "lucide-react";
+import { Heart, Share2, Truck, Shield, RefreshCw, Zap } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect, useMemo } from "react";
@@ -21,6 +21,7 @@ export default function ProductDetail() {
   const { addItem } = useCart();
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const { data: products } = useQuery({
     queryKey: ["/api/products"],
@@ -61,6 +62,12 @@ export default function ProductDetail() {
       title: "Added to cart",
       description: `${quantity} × ${product.name} added to your cart.`,
     });
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    addItem(product, quantity);
+    setLocation("/checkout");
   };
 
   if (!products) {
@@ -217,6 +224,15 @@ export default function ProductDetail() {
               Add to Cart
             </Button>
           </div>
+
+          <Button
+            size="lg"
+            className="w-full bg-brandGold hover:bg-brandGold/90 text-white font-serif tracking-wide h-12 text-base"
+            onClick={handleBuyNow}
+          >
+            <Zap className="h-4 w-4 mr-2" />
+            Buy Now
+          </Button>
 
           <div className="flex gap-2">
             <Button
