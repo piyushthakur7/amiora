@@ -5,6 +5,14 @@
             "destination": "https://darkgray-rail-803191.hostingersite.com/wp-json/wc/v3/$1"
         },
         {
+            "source": "/api/jwt-auth/(.*)",
+            "destination": "https://darkgray-rail-803191.hostingersite.com/wp-json/jwt-auth/v1/$1"
+        },
+        {
+            "source": "/api/wp/(.*)",
+            "destination": "https://darkgray-rail-803191.hostingersite.com/wp-json/wp/v2/$1"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

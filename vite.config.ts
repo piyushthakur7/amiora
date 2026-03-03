@@ -36,6 +36,16 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/wc/, ""),
       },
+      "/api/jwt-auth": {
+        target: "https://darkgray-rail-803191.hostingersite.com/wp-json/jwt-auth/v1",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/jwt-auth/, ""),
+      },
+      "/api/wp": {
+        target: "https://darkgray-rail-803191.hostingersite.com/wp-json/wp/v2",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/wp/, ""),
+      },
     }
   }
 });

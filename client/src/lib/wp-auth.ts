@@ -14,7 +14,9 @@
  * RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
  */
 
-const WP_URL = import.meta.env.VITE_WC_URL || "https://darkgray-rail-803191.hostingersite.com";
+// Use proxy paths to avoid CORS issues (these are rewritten by Vite dev server / Vercel rewrites)
+const WC_API_URL = "/api/wc";
+const JWT_AUTH_URL = "/api/jwt-auth";
 
 export interface WPUser {
     id: number;
@@ -79,7 +81,7 @@ export function clearAuthData(): void {
  */
 export async function wpLogin(username: string, password: string): Promise<AuthResponse> {
     try {
-        const response = await fetch(`${WP_URL}/wp-json/jwt-auth/v1/token`, {
+        const response = await fetch(`${JWT_AUTH_URL}/token`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -142,8 +144,8 @@ export async function wpRegister(
     const WC_CONSUMER_SECRET = import.meta.env.VITE_WC_CONSUMER_SECRET || "";
 
     try {
-        // Create customer via WooCommerce API
-        const response = await fetch(`${WP_URL}/wp-json/wc/v3/customers`, {
+        // Create customer via WooCommerce API (through proxy to avoid CORS)
+        const response = await fetch(`${WC_API_URL}/customers`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -202,7 +204,7 @@ export async function validateToken(): Promise<boolean> {
     if (!token) return false;
 
     try {
-        const response = await fetch(`${WP_URL}/wp-json/jwt-auth/v1/token/validate`, {
+        const response = await fetch(`${JWT_AUTH_URL}/token/validate`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -228,7 +230,7 @@ export async function getCurrentUser(): Promise<WPUser | null> {
     if (!token) return null;
 
     try {
-        const response = await fetch(`${WP_URL}/wp-json/wp/v2/users/me`, {
+        const response = await fetch(`/api/wp/users/me`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
